@@ -2,9 +2,10 @@
 
 ## Concept
 
-Jeu de grille quotidien (style "Immaculate Grid") adapté au foot européen.
+Jeu de grille quotidien (style "Immaculate Grid") adapté au foot européen. Chaque jour le défi change et est proposé selon 3 modes de jeu.
 Grille 3×3 : chaque case = joueur ayant joué dans les deux clubs/sélections en ligne et colonne.
 4 erreurs max. Partage résultat via émojis WhatsApp 🟢⬛ à la fin.
+L'idée est de trouver le bon équilibre entre difficulté du jeu, satisfaction personnelle, défi versus ses amis pour que les utilisateurs reviennent et construire une base importante d'utilisateurs quotidiens
 
 ## Architecture
 
@@ -14,6 +15,7 @@ Pas de build, pas de dépendances npm — ouvrir directement dans un navigateur.
 ```
 index.html          → le jeu complet (HTML/CSS/JS)
 players_clean.json  → BDD joueurs (470 joueurs, générée par pipeline Python)
+    > cette base contient pour l'instant seulement les joueurs de ligue 1 de la saison 2025/2026. à terme elle devra contenir l'ensemble de la base de 1ère division des 5 grands championnats sur un historique de 20 ans 
 players_raw.json    → données brutes Transfermarkt avant nettoyage
 extract_players.py  → scrape l'API Transfermarkt locale → players_raw.json
 clean_players.py    → normalise players_raw.json → players_clean.json
@@ -43,16 +45,14 @@ venv/               → venv Python pour les scripts d'extraction
 
 ## Modes de jeu
 
-| Code CSS | Nom      | Difficulté | Axes de la grille                        |
-|----------|----------|------------|------------------------------------------|
-| `cc`     | Normal   | ★★☆        | Club × Club                              |
-| `ca`     | Sélection| ★★★        | Sélection nationale × Club               |
-| `cs`     | Doubles  | ★★★★       | Sélection × Sélection (doubles nat.)     |
-| *(futur)*| Expert   | ★★★★★      | Club × Année — nécessite dates carrière  |
+Club × Club                              |
+Sélection nationale × Club               |
+Sélection × Sélection (doubles nat.) > un mode de jeu abandonné au cours des travaux
+Club × tranche d'années (exemple : marseille x 2010-2012)
 
 ## Grilles
 
-Les grilles sont prédéfinies en dur dans `index.html` (objet `GRILLES`), 2 grilles par mode.
+Pour le test, Les grilles sont prédéfinies en dur dans `index.html` (objet `GRILLES`), 2 grilles par mode.
 La rotation se fait par jour de l'année : `grille = GRILLES[mode][Math.floor(jourAnnée / 183)]`
 
 Validation en deux passes :
@@ -90,6 +90,13 @@ Polices : **Barlow Condensed** (titres, UI) + **Barlow** (texte courant) — Goo
 
 ## Roadmap
 
-- [ ] Mode Expert : Club × Année (ex: PSG 2015) — structure de données déjà prête
-- [ ] Étendre la BDD aux 5 grands championnats (PL=GB1, Liga=ES1, Bundesliga=L1, Serie A=IT1)
-- [ ] Grilles supplémentaires / système de rotation hebdomadaire
+BDD
+- charger l'historique de données sur transfer markt (PL=GB1, Liga=ES1, Bundesliga=L1, Serie A=IT1 et historique depuis 20 ans voire 30 si possible car les ref des millenials vont jusque là)
+- organiser la mise à jour de la BDD à la fin de chaque mercato par incrément (ne pas tout recharger si possible)
+
+Jeu
+- remplacer le mode de jeu club x année par club x tranche d'années de 2 ou 3 ans pour que ce soit moins ciblé
+- revoir la fonction de partage whatsapp car le format affiché dans whatsapp est un peu austère et les emoji se transforme en caractère d'erreur
+- organiser la rotation quotidienne des questions
+- Permettre au joueur d'avoir son historique de performance dans son navigateur
+- à la saisie d'un nom dans la barre de recherche de joueur, chercher par nom et par prénom. Et ne pas afficher les infos satellite (nationalités et clubs)

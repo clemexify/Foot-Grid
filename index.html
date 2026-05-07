@@ -96,11 +96,11 @@ header{text-align:center;padding:20px 0 14px;border-bottom:1px solid var(--gris)
 .search-input:focus{border-color:var(--vert)}
 .search-input::placeholder{color:#333}
 .suggestions{max-height:220px;overflow-y:auto}
-.sug-item{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid #1a2a1a;cursor:pointer;transition:background .1s}
+.sug-item{display:flex;align-items:center;padding:10px 12px;border-bottom:1px solid #1a2a1a;cursor:pointer;transition:background .1s}
 .sug-item:hover{background:#0d2a0d}
 .sug-item:last-child{border-bottom:none}
 .sug-name{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;text-transform:uppercase}
-.sug-info{font-size:11px;color:var(--gris-clair);text-align:right;line-height:1.4}
+
 .no-results{text-align:center;padding:18px;color:var(--gris-clair);font-style:italic;font-size:14px}
 .modal-close{width:100%;background:transparent;border:1px solid var(--gris);color:var(--gris-clair);font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:2px;text-transform:uppercase;padding:11px;cursor:pointer;margin-top:10px;transition:all .2s}
 .modal-close:hover{border-color:var(--rouge);color:var(--rouge)}
@@ -370,20 +370,23 @@ function closeModalOutside(e) { if(e.target===document.getElementById('modal-ove
 function onSearch(val) {
   const c = document.getElementById('suggestions');
   if (val.length < 2) { c.innerHTML=''; return; }
-  const q = val.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  const norm = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  const q = norm(val);
   const seen = new Set();
   const matches = JOUEURS.filter(j => {
     if (seen.has(j.nom)) return false;
     seen.add(j.nom);
-    return j.nom.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').includes(q);
-  }).slice(0,8);
+    return norm(j.nom).includes(q);
+  }).sort((a, b) => {
+    const aStart = norm(a.nom).split(' ').some(w => w.startsWith(q));
+    const bStart = norm(b.nom).split(' ').some(w => w.startsWith(q));
+    return bStart - aStart;
+  }).slice(0, 8);
   if (!matches.length) { c.innerHTML='<div class="no-results">Aucun joueur trouvé…</div>'; return; }
   c.innerHTML = '';
   matches.forEach(j => {
     const item = document.createElement('div'); item.className='sug-item';
-    const clubs = [...new Set(j.clubs)].slice(0,3).join(', ');
-    const nats = j.sels.slice(0,2).map(s=>(FLAGS[s]||'')+' '+s).join(', ');
-    item.innerHTML = '<div class="sug-name">'+j.nom+'</div><div class="sug-info">'+clubs+'<br>'+nats+'</div>';
+    item.innerHTML = '<div class="sug-name">'+j.nom+'</div>';
     item.onclick = () => selectPlayer(j.nom);
     c.appendChild(item);
   });
