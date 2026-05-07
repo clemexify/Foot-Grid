@@ -99,4 +99,4 @@ Jeu
 - revoir la fonction de partage whatsapp car le format affiché dans whatsapp est un peu austère et les emoji se transforme en caractère d'erreur
 - organiser la rotation quotidienne des questions
 - Permettre au joueur d'avoir son historique de performance dans son navigateur
-- à la saisie d'un nom dans la barre de recherche de joueur, chercher par nom et par prénom. Et ne pas afficher les infos satellite (nationalités et clubs)
+- à la saisie d'un nom dans la barre de recherche de joueur, chercher par nom et par prénom. Et ne pas afficher les infos satellite (nationalités et clubs) > Fait
