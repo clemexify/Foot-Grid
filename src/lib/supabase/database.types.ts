@@ -4,6 +4,7 @@ export type Database = {
   public: {
     Enums: {
       attempt_status: "in_progress" | "completed" | "failed" | "abandoned";
+      data_snapshot_status: "importing" | "active" | "archived" | "failed";
       puzzle_mode: "club_club" | "club_year" | "club_nationality";
       puzzle_status: "draft" | "scheduled" | "published" | "archived";
     };
@@ -33,6 +34,8 @@ export type Database = {
         Row: {
           club_id: number;
           created_at: string;
+          data_snapshot_id: string | null;
+          external_id: string | null;
           id: number;
           is_loan: boolean;
           player_id: number;
@@ -45,6 +48,8 @@ export type Database = {
         Insert: {
           club_id: number;
           created_at?: string;
+          data_snapshot_id?: string | null;
+          external_id?: string | null;
           id?: number;
           is_loan?: boolean;
           player_id: number;
@@ -57,6 +62,8 @@ export type Database = {
         Update: {
           club_id?: number;
           created_at?: string;
+          data_snapshot_id?: string | null;
+          external_id?: string | null;
           id?: number;
           is_loan?: boolean;
           player_id?: number;
@@ -72,6 +79,8 @@ export type Database = {
         Row: {
           country_id: number | null;
           created_at: string;
+          data_snapshot_id: string | null;
+          external_id: string | null;
           id: number;
           name: string;
           slug: string;
@@ -81,6 +90,8 @@ export type Database = {
         Insert: {
           country_id?: number | null;
           created_at?: string;
+          data_snapshot_id?: string | null;
+          external_id?: string | null;
           id?: number;
           name: string;
           slug: string;
@@ -90,6 +101,8 @@ export type Database = {
         Update: {
           country_id?: number | null;
           created_at?: string;
+          data_snapshot_id?: string | null;
+          external_id?: string | null;
           id?: number;
           name?: string;
           slug?: string;
@@ -101,6 +114,8 @@ export type Database = {
       countries: {
         Row: {
           created_at: string;
+          data_snapshot_id: string | null;
+          external_id: string | null;
           fifa_code: string | null;
           id: number;
           iso2: string | null;
@@ -109,6 +124,8 @@ export type Database = {
         };
         Insert: {
           created_at?: string;
+          data_snapshot_id?: string | null;
+          external_id?: string | null;
           fifa_code?: string | null;
           id?: number;
           iso2?: string | null;
@@ -117,11 +134,79 @@ export type Database = {
         };
         Update: {
           created_at?: string;
+          data_snapshot_id?: string | null;
+          external_id?: string | null;
           fifa_code?: string | null;
           id?: number;
           iso2?: string | null;
           name?: string;
           slug?: string;
+        };
+        Relationships: [];
+      };
+      data_snapshots: {
+        Row: {
+          created_at: string;
+          id: string;
+          imported_at: string | null;
+          label: string;
+          notes: string | null;
+          source_id: number;
+          status: Database["public"]["Enums"]["data_snapshot_status"];
+          updated_at: string;
+          version: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          imported_at?: string | null;
+          label: string;
+          notes?: string | null;
+          source_id: number;
+          status?: Database["public"]["Enums"]["data_snapshot_status"];
+          updated_at?: string;
+          version: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          imported_at?: string | null;
+          label?: string;
+          notes?: string | null;
+          source_id?: number;
+          status?: Database["public"]["Enums"]["data_snapshot_status"];
+          updated_at?: string;
+          version?: string;
+        };
+        Relationships: [];
+      };
+      data_sources: {
+        Row: {
+          created_at: string;
+          id: number;
+          license_note: string | null;
+          name: string;
+          provider_url: string | null;
+          slug: string;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: number;
+          license_note?: string | null;
+          name: string;
+          provider_url?: string | null;
+          slug: string;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: number;
+          license_note?: string | null;
+          name?: string;
+          provider_url?: string | null;
+          slug?: string;
+          updated_at?: string;
         };
         Relationships: [];
       };
@@ -225,7 +310,9 @@ export type Database = {
         Row: {
           birth_date: string | null;
           created_at: string;
+          data_snapshot_id: string | null;
           display_name: string;
+          external_id: string | null;
           id: number;
           slug: string;
           transfermarkt_id: string | null;
@@ -234,7 +321,9 @@ export type Database = {
         Insert: {
           birth_date?: string | null;
           created_at?: string;
+          data_snapshot_id?: string | null;
           display_name: string;
+          external_id?: string | null;
           id?: number;
           slug: string;
           transfermarkt_id?: string | null;
@@ -243,7 +332,9 @@ export type Database = {
         Update: {
           birth_date?: string | null;
           created_at?: string;
+          data_snapshot_id?: string | null;
           display_name?: string;
+          external_id?: string | null;
           id?: number;
           slug?: string;
           transfermarkt_id?: string | null;
@@ -350,6 +441,7 @@ export type Database = {
       puzzles: {
         Row: {
           created_at: string;
+          data_snapshot_id: string | null;
           difficulty: number | null;
           generated_at: string | null;
           id: string;
@@ -363,6 +455,7 @@ export type Database = {
         };
         Insert: {
           created_at?: string;
+          data_snapshot_id?: string | null;
           difficulty?: number | null;
           generated_at?: string | null;
           id?: string;
@@ -376,6 +469,7 @@ export type Database = {
         };
         Update: {
           created_at?: string;
+          data_snapshot_id?: string | null;
           difficulty?: number | null;
           generated_at?: string | null;
           id?: string;
@@ -454,6 +548,18 @@ export type Database = {
       };
     };
     Views: {
+      active_data_snapshots: {
+        Row: {
+          id: string | null;
+          imported_at: string | null;
+          label: string | null;
+          notes: string | null;
+          source_name: string | null;
+          source_slug: string | null;
+          version: string | null;
+        };
+        Relationships: [];
+      };
       daily_leaderboard: {
         Row: {
           completed_at: string | null;

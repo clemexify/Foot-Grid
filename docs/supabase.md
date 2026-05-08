@@ -18,13 +18,44 @@ Then fill:
 
 ## Database
 
-The initial schema lives in:
+The schema migrations live in:
 
 ```txt
 supabase/migrations/20260508190000_initial_schema.sql
+supabase/migrations/20260508203000_add_data_snapshots.sql
 ```
 
-Apply it from the Supabase dashboard SQL editor, or install the Supabase CLI and run it as a migration once the project is linked.
+Apply them from the Supabase dashboard SQL editor in filename order, or install the Supabase CLI and run them as migrations once the project is linked.
+
+## Data snapshots
+
+Football reference data is versioned through:
+
+- `data_sources`
+- `data_snapshots`
+- `data_snapshot_id` on countries, clubs, players, career spells, and puzzles
+
+This lets us import prototype data now, then switch to a better provider later without breaking historical puzzles, accepted answers, or leaderboard results.
+
+For development, hard-flushing football data is possible, but it should only be done before real user results matter. In production, prefer creating a new active snapshot and generating future puzzles from it while keeping older snapshots available for historical grids.
+
+Development-only hard flush shape:
+
+```sql
+truncate table
+  accepted_answers,
+  puzzle_cells,
+  puzzle_axes,
+  puzzles,
+  career_spells,
+  player_nationalities,
+  players,
+  clubs,
+  countries,
+  data_snapshots,
+  data_sources
+restart identity cascade;
+```
 
 ## Intended backend shape
 
