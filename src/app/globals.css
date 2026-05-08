@@ -148,6 +148,16 @@ header {
   white-space: nowrap;
 }
 
+.puzzle-source {
+  color: var(--gris);
+  font-family: var(--font-barlow-condensed), sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin-left: auto;
+  text-transform: uppercase;
+}
+
 .account-btn,
 .icon-text-btn,
 .link-btn {

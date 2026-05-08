@@ -7,6 +7,7 @@ import AuthPanel from "./auth/AuthPanel";
 import { useAuth } from "./auth/AuthProvider";
 import type { Player, PuzzlesByMode } from "@/game/types";
 import { useGame } from "@/hooks/useGame";
+import { usePublishedPuzzles } from "@/hooks/usePublishedPuzzles";
 import EndScreen from "./game/EndScreen";
 import ErrorsRow from "./game/ErrorsRow";
 import GameGrid from "./game/GameGrid";
@@ -19,7 +20,8 @@ const players = playersData as Player[];
 const puzzles = puzzlesData as PuzzlesByMode;
 
 export default function FootGridApp() {
-  const game = useGame({ players, puzzles });
+  const publishedPuzzles = usePublishedPuzzles(puzzles);
+  const game = useGame({ players, puzzles: publishedPuzzles.puzzles });
   const { loading, user } = useAuth();
   const [showAccount, setShowAccount] = useState(false);
   const inGame = Boolean(game.mode && game.puzzle && game.state);
@@ -29,6 +31,7 @@ export default function FootGridApp() {
       <Header score={game.score} found={game.state?.trouves ?? 0} inGame={inGame} />
       <div className="account-bar">
         <span>{loading ? "Session..." : user ? `Connecté${user.email ? ` · ${user.email}` : ""}` : "Joue en invité"}</span>
+        <span className="puzzle-source">{publishedPuzzles.loading ? "Grilles..." : publishedPuzzles.source}</span>
         <button className="account-btn" onClick={() => setShowAccount((value) => !value)}>
           {user ? "Mon espace" : "Connexion"}
         </button>

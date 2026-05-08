@@ -11,6 +11,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "generate:data": "node scripts/extract-prototype-data.mjs",
+    "db:seed:prototype": "node scripts/seed-prototype-supabase.mjs",
+    "db:seed:prototype:dry-run": "node scripts/seed-prototype-supabase.mjs --dry-run",
     "verify": "npm run generate:data && npm run test && npm run build"
   },
   "dependencies": {

@@ -39,6 +39,42 @@ This lets us import prototype data now, then switch to a better provider later w
 
 For development, hard-flushing football data is possible, but it should only be done before real user results matter. In production, prefer creating a new active snapshot and generating future puzzles from it while keeping older snapshots available for historical grids.
 
+## Seed prototype data
+
+The prototype seed script reads:
+
+```txt
+src/data/players.generated.json
+src/data/puzzles.generated.json
+```
+
+It writes a rerunnable prototype snapshot:
+
+```txt
+data_sources.slug = prototype-l1-2025-26
+data_snapshots.version = v1
+```
+
+Preview what it will import without touching Supabase:
+
+```bash
+npm run db:seed:prototype:dry-run
+```
+
+Write the data to Supabase:
+
+```bash
+npm run db:seed:prototype
+```
+
+The script uses `SUPABASE_SERVICE_ROLE_KEY`, so run it only locally or from trusted CI. It deletes and recreates only the prototype snapshot data before reseeding.
+
+By default, seeded prototype puzzles use today's date. Override that with:
+
+```bash
+PROTOTYPE_PUZZLE_DATE=2026-05-08 npm run db:seed:prototype
+```
+
 Development-only hard flush shape:
 
 ```sql
