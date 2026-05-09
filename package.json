@@ -1,0 +1,32 @@
+{
+  "name": "foot-grid",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "generate:data": "node scripts/extract-prototype-data.mjs",
+    "db:seed:prototype": "node scripts/seed-prototype-supabase.mjs",
+    "db:seed:prototype:dry-run": "node scripts/seed-prototype-supabase.mjs --dry-run",
+    "verify": "npm run generate:data && npm run test && npm run build"
+  },
+  "dependencies": {
+    "@supabase/ssr": "^0.10.3",
+    "@supabase/supabase-js": "^2.105.4",
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "typescript": "latest",
+    "vitest": "latest"
+  }
+}

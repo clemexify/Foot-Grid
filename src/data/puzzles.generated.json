@@ -1,0 +1,370 @@
+{
+  "cc": {
+    "rows": [
+      "Lyon",
+      "Marseille",
+      "RC Lens"
+    ],
+    "cols": [
+      "Rennes",
+      "Nice",
+      "Nantes"
+    ],
+    "rowType": "club",
+    "colType": "club",
+    "solutions": {
+      "Lyon-Rennes": [
+        "Amine Gouiri",
+        "Hans Hateboer",
+        "Romain Del Castillo"
+      ],
+      "Lyon-Nice": [
+        "Amine Gouiri",
+        "Melvin Bard",
+        "Tanguy Ndombélé",
+        "Timothée Kolodziejczak"
+      ],
+      "Lyon-Nantes": [
+        "Anthony Lopes",
+        "Johann Lepenant",
+        "Rémy Descamps",
+        "Rémy Riou",
+        "Willem Geubbels"
+      ],
+      "Marseille-Rennes": [
+        "Amine Gouiri",
+        "Brice Samba",
+        "Lilian Brassier",
+        "Nayef Aguerd",
+        "Quentin Merlin",
+        "Valentin Rongier"
+      ],
+      "Marseille-Nice": [
+        "Amine Gouiri",
+        "Elye Wahi",
+        "Jonathan Clauss",
+        "Morgan Sanson"
+      ],
+      "Marseille-Nantes": [
+        "Quentin Merlin",
+        "Rémy Cabella",
+        "Valentin Rongier"
+      ],
+      "RC Lens-Rennes": [
+        "Brice Samba",
+        "Przemyslaw Frankowski",
+        "Wesley Saïd"
+      ],
+      "RC Lens-Nice": [
+        "Allan Saint-Maximin",
+        "Elye Wahi",
+        "Ignatius Ganago",
+        "Jonathan Clauss",
+        "Juma Bah",
+        "Malang Sarr",
+        "Salis Abdul Samed",
+        "Timothée Kolodziejczak"
+      ],
+      "RC Lens-Nantes": [
+        "Adrien Thomasson",
+        "Deiver Machado",
+        "Fabien Centonze",
+        "Ignatius Ganago",
+        "Jean-Philippe Gbamin"
+      ]
+    }
+  },
+  "ca": {
+    "rows": [
+      "PSG",
+      "Monaco",
+      "Auxerre"
+    ],
+    "cols": [
+      2022,
+      2023,
+      2024
+    ],
+    "rowType": "club",
+    "colType": "annee",
+    "solutions": {
+      "PSG-2022": [
+        "Achraf Hakimi",
+        "Fabián Ruiz",
+        "Junior Dina Ebimbe",
+        "Marquinhos",
+        "Nuno Mendes",
+        "Thilo Kehrer",
+        "Timothée Pembélé",
+        "Vitinha",
+        "Warren Zaïre-Emery"
+      ],
+      "PSG-2023": [
+        "Achraf Hakimi",
+        "Bradley Barcola",
+        "Fabián Ruiz",
+        "Gonçalo Ramos",
+        "Junior Dina Ebimbe",
+        "Kang-in Lee",
+        "Lucas Beraldo",
+        "Lucas Hernández",
+        "Marquinhos",
+        "Nuno Mendes",
+        "Ousmane Dembélé",
+        "Senny Mayulu",
+        "Timothée Pembélé",
+        "Vitinha",
+        "Warren Zaïre-Emery"
+      ],
+      "PSG-2024": [
+        "Achraf Hakimi",
+        "Bradley Barcola",
+        "Désiré Doué",
+        "Fabián Ruiz",
+        "Gonçalo Ramos",
+        "João Neves",
+        "Junior Dina Ebimbe",
+        "Kang-in Lee",
+        "Khvicha Kvaratskhelia",
+        "Lucas Beraldo",
+        "Lucas Hernández",
+        "Marquinhos",
+        "Matvey Safonov",
+        "Nuno Mendes",
+        "Ousmane Dembélé",
+        "Senny Mayulu",
+        "Timothée Pembélé",
+        "Vitinha",
+        "Warren Zaïre-Emery",
+        "Willian Pacho"
+      ],
+      "Monaco-2022": [
+        "Aleksandr Golovin",
+        "Breel Embolo",
+        "Caio Henrique",
+        "Fodé Ballo-Touré",
+        "Krépin Diatta",
+        "Maghnes Akliouche",
+        "Ruben Aguilar",
+        "Takumi Minamino",
+        "Vanderson"
+      ],
+      "Monaco-2023": [
+        "Aleksandr Golovin",
+        "Breel Embolo",
+        "Caio Henrique",
+        "Denis Zakaria",
+        "Folarin Balogun",
+        "Kassoum Ouattara",
+        "Krépin Diatta",
+        "Maghnes Akliouche",
+        "Mohammed Salisu",
+        "Philipp Köhn",
+        "Takumi Minamino",
+        "Vanderson",
+        "Yann Lienard"
+      ],
+      "Monaco-2024": [
+        "Aleksandr Golovin",
+        "Breel Embolo",
+        "Caio Henrique",
+        "Christian Mawissa",
+        "Denis Zakaria",
+        "Folarin Balogun",
+        "Jordan Teze",
+        "Kassoum Ouattara",
+        "Krépin Diatta",
+        "Lamine Camara",
+        "Maghnes Akliouche",
+        "Mika Biereth",
+        "Mohammed Salisu",
+        "Paris Brunner",
+        "Philipp Köhn",
+        "Takumi Minamino",
+        "Thilo Kehrer",
+        "Vanderson",
+        "Yann Lienard"
+      ],
+      "Auxerre-2022": [
+        "Clément Akpa",
+        "Donovan Léon",
+        "Elisha Owusu",
+        "Gauthier Hein",
+        "Gaëtan Perrin",
+        "Gideon Mensah",
+        "Kévin Danois",
+        "Lassine Sinayoko",
+        "Matthis Abline",
+        "Théo De Percin"
+      ],
+      "Auxerre-2023": [
+        "Assane Dioussé",
+        "Clément Akpa",
+        "Donovan Léon",
+        "Elisha Owusu",
+        "Gauthier Hein",
+        "Gaëtan Perrin",
+        "Gideon Mensah",
+        "Kévin Danois",
+        "Lassine Sinayoko",
+        "Théo De Percin"
+      ],
+      "Auxerre-2024": [
+        "Assane Dioussé",
+        "Clément Akpa",
+        "Donovan Léon",
+        "Elisha Owusu",
+        "Fredrik Oppegård",
+        "Gaëtan Perrin",
+        "Gideon Mensah",
+        "Hamed Traoré",
+        "Kévin Danois",
+        "Lassine Sinayoko",
+        "Lasso Coulibaly",
+        "Nathan Buayi-Kiala",
+        "Sinaly Diomandé",
+        "Théo De Percin",
+        "Tom Negrel"
+      ]
+    }
+  },
+  "cs": {
+    "rows": [
+      "Strasbourg",
+      "Auxerre",
+      "Le Havre"
+    ],
+    "cols": [
+      "France",
+      "Sénégal",
+      "Côte d'Ivoire"
+    ],
+    "rowType": "club",
+    "colType": "sel",
+    "solutions": {
+      "Strasbourg-France": [
+        "Abdoul Ouattara",
+        "Adrien Thomasson",
+        "Bingourou Kamara",
+        "Frédéric Guilbert",
+        "Gessime Yassine",
+        "Guéla Doué",
+        "Habib Diallo",
+        "Ibrahima Sissoko",
+        "Ismaël Doukouré",
+        "Jessy Deminguet",
+        "Junior Mwanga",
+        "Kenny Lala",
+        "Ludovic Ajorque",
+        "Marvin Senaya",
+        "Mathis Amougou",
+        "Morgan Sanson",
+        "Robin Risser",
+        "Régis Gurtner",
+        "Samir El Mourabet",
+        "Soumaïla Coulibaly",
+        "Stefan Bajic",
+        "Sékou Mara"
+      ],
+      "Strasbourg-Sénégal": [
+        "Bingourou Kamara",
+        "Habib Diallo",
+        "Pape Demba Diop",
+        "Sékou Mara"
+      ],
+      "Strasbourg-Côte d'Ivoire": [
+        "Abakar Sylla",
+        "Abdoul Ouattara",
+        "David Datro Fofana",
+        "Guéla Doué",
+        "Ismaël Doukouré",
+        "Martial Godo"
+      ],
+      "Auxerre-France": [
+        "Clément Akpa",
+        "Donovan Léon",
+        "Elisha Owusu",
+        "Gauthier Hein",
+        "Gautier Lloris",
+        "Gaëtan Perrin",
+        "Isaak Touré",
+        "Kévin Danois",
+        "Lamine Sy",
+        "Lassine Sinayoko",
+        "Marvin Senaya",
+        "Matthis Abline",
+        "Naouirou Ahamada",
+        "Nathan Buayi-Kiala",
+        "Romain Faivre",
+        "Ruben Aguilar",
+        "Rudy Matondo",
+        "Rémy Riou",
+        "Samir Chergui",
+        "Sékou Mara",
+        "Telli Siwe",
+        "Théo De Percin",
+        "Tom Negrel"
+      ],
+      "Auxerre-Sénégal": [
+        "Assane Dioussé",
+        "Issa Soumaré",
+        "Lamine Sy",
+        "Sékou Mara"
+      ],
+      "Auxerre-Côte d'Ivoire": [
+        "Clément Akpa",
+        "Hamed Traoré",
+        "Isaak Touré",
+        "Lasso Coulibaly",
+        "Sinaly Diomandé"
+      ],
+      "Le Havre-France": [
+        "Abdoulaye Touré",
+        "Alimami Gory",
+        "Brice Samba",
+        "Daren Mosengo",
+        "Enzo Koffi",
+        "Florent Hanin",
+        "Fodé Ballo-Touré",
+        "Gautier Lloris",
+        "Godson Kyeremeh",
+        "Guy-Noël Zohouri",
+        "Himad Abdelli",
+        "Isaak Touré",
+        "Junior Dina Ebimbe",
+        "Junior Mwanga",
+        "Kenny Quetant",
+        "Lionel Mpasi-Nzau",
+        "Loïc Nego",
+        "Lucas Gourna-Douath",
+        "Mathieu Gorgelin",
+        "Matthis Abline",
+        "Mory Diaw",
+        "Noam Obougou",
+        "Paul Argney",
+        "Rassoul Ndiaye",
+        "Régis Gurtner",
+        "Simon Ebonog",
+        "Sofiane Boufal",
+        "Stephan Zagadou",
+        "Timothée Pembélé",
+        "Yanis Zouaoui",
+        "Yassine Kechta",
+        "Étienne Youté Kinkoué"
+      ],
+      "Le Havre-Sénégal": [
+        "Arouna Sangante",
+        "Fodé Ballo-Touré",
+        "Issa Soumaré",
+        "Mory Diaw",
+        "Rassoul Ndiaye"
+      ],
+      "Le Havre-Côte d'Ivoire": [
+        "Enzo Koffi",
+        "Guy-Noël Zohouri",
+        "Isaak Touré",
+        "Stephan Zagadou"
+      ]
+    }
+  }
+}
