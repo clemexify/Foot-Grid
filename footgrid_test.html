@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Foot Grid — Grille Test Facile</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --noir:#080c08;--vert:#00a550;--vert-s:#006830;--vert-p:#0d1f0d;
+  --blanc:#f0f4f0;--or:#ffd700;--gris:#3a4a3a;--gris-c:#6b7c6b;
+  --rouge:#e63946;--violet:#9b59b6;--bleu:#3498db;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--noir);color:var(--blanc);font-family:'Barlow',sans-serif;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(180deg,rgba(0,165,80,.03) 0px,rgba(0,165,80,.03) 40px,transparent 40px,transparent 80px);pointer-events:none;z-index:0}
+.wrap{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:12px 12px 80px}
+
+/* HEADER */
+header{text-align:center;padding:16px 0 12px;border-bottom:1px solid var(--gris);margin-bottom:14px}
+.logo{font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:900;letter-spacing:-1px;text-transform:uppercase}
+.logo span{color:var(--vert)}
+.tag{display:inline-block;background:var(--vert-s);color:var(--vert);font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;padding:3px 10px;margin-top:4px}
+.pool-info{font-size:12px;color:var(--gris-c);margin-top:6px;line-height:1.4}
+.pool-info strong{color:var(--blanc)}
+
+/* SCOREBOARD */
+.scoreboard{display:flex;justify-content:center;gap:24px;margin:10px 0 14px}
+.sc-item{text-align:center}
+.sc-num{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;color:var(--or);line-height:1}
+.sc-label{font-size:10px;color:var(--gris-c);letter-spacing:2px;text-transform:uppercase;margin-top:2px}
+
+/* ERREURS */
+.errors-row{display:flex;gap:6px;justify-content:center;margin-bottom:12px}
+.dot{width:12px;height:12px;border-radius:50%;background:var(--vert);transition:background .3s}
+.dot.used{background:var(--rouge)}
+
+/* LÉGENDES CRITERES */
+.legend{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:10px}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--gris-c);background:#111;padding:4px 8px;border-radius:3px}
+.leg-dot{width:8px;height:8px;border-radius:50%}
+.leg-dot.cdm{background:#f1c40f}
+.leg-dot.c1{background:#9b59b6}
+.leg-dot.real{background:#fff}
+
+/* GRILLE */
+.grid{display:grid;grid-template-columns:70px 1fr 1fr 1fr;grid-template-rows:70px 1fr 1fr 1fr;gap:3px;margin-bottom:12px}
+.corner{}
+.col-hdr,.row-hdr{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 4px;text-align:center;gap:3px}
+.col-hdr.cdm,.row-hdr.cdm{background:#1a1400;border:1px solid #f1c40f}
+.col-hdr.c1,.row-hdr.c1{background:#1a0a2a;border:1px solid var(--violet)}
+.col-hdr.real,.row-hdr.real{background:#0d0d14;border:1px solid #aaa}
+.col-hdr.pos,.row-hdr.pos{background:var(--vert-p);border:1px solid var(--vert)}
+.hdr-icon{font-size:18px;line-height:1}
+.hdr-text{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;line-height:1.2}
+.col-hdr.cdm .hdr-text{color:#f1c40f}
+.col-hdr.c1 .hdr-text{color:#c080ff}
+.col-hdr.real .hdr-text{color:#ddd}
+.row-hdr.pos .hdr-text{color:var(--vert)}
+
+.cell{position:relative;background:var(--vert-p);border:1px solid var(--gris);aspect-ratio:1;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;transition:all .15s;min-height:76px}
+.cell:hover:not(.filled):not(.locked){background:#0d2a0d;border-color:var(--vert)}
+.cell.filled{background:#0a3a0a;border-color:var(--vert);cursor:default}
+.cell.wrong{background:#2a0a0a;border-color:var(--rouge);animation:shake .3s ease}
+.cell.locked{background:#111;cursor:not-allowed;opacity:.5}
+.cell-plus{font-size:22px;color:var(--gris);transition:color .15s}
+.cell:hover:not(.filled) .cell-plus{color:var(--vert)}
+.cell-content{text-align:center;padding:6px 4px}
+.cell-nom{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;text-transform:uppercase;line-height:1.2;color:var(--blanc)}
+.cell-rarete{font-size:11px;margin-top:4px;font-weight:700;font-family:'Barlow Condensed',sans-serif;letter-spacing:.5px}
+.cell-rarete.rare{color:var(--or)}
+.cell-rarete.commun{color:var(--gris-c)}
+.rarete-badge{position:absolute;top:3px;right:3px;font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;padding:2px 4px;letter-spacing:.5px}
+.rarete-badge.gold{background:var(--or);color:#000}
+.rarete-badge.silver{background:#888;color:#000}
+.rarete-badge.bronze{background:#cd7f32;color:#fff}
+.rarete-badge.common{background:#333;color:#aaa}
+.cell-locked-ans{font-family:'Barlow Condensed',sans-serif;font-size:10px;color:var(--gris-c);text-align:center;padding:4px}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:100;align-items:flex-end;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:#0d1a0d;border:1px solid var(--vert);border-bottom:none;width:100%;max-width:480px;border-radius:16px 16px 0 0;padding:16px 14px;animation:slideUp .22s ease}
+.modal-hint{font-size:13px;color:var(--gris-c);margin-bottom:10px;line-height:1.5;padding:8px 10px;background:#0a0a0a;border-left:3px solid var(--vert)}
+.modal-hint strong{color:var(--blanc)}
+.modal-pool{font-size:11px;color:#555;margin-bottom:10px;text-align:center}
+.modal-pool strong{color:var(--gris-c)}
+.search-input{width:100%;background:#111;border:1px solid var(--gris);color:var(--blanc);font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:600;letter-spacing:1px;padding:12px 14px;outline:none;text-transform:uppercase;-webkit-appearance:none;margin-bottom:8px}
+.search-input:focus{border-color:var(--vert)}
+.search-input::placeholder{color:#2a2a2a}
+.suggestions{max-height:210px;overflow-y:auto}
+.sug-item{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid #1a2a1a;cursor:pointer;transition:background .1s}
+.sug-item:hover{background:#0d2a0d}
+.sug-name{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;text-transform:uppercase}
+.sug-meta{font-size:11px;color:var(--gris-c);text-align:right;line-height:1.4}
+.no-res{text-align:center;padding:18px;color:var(--gris-c);font-style:italic;font-size:14px}
+.modal-close{width:100%;background:transparent;border:1px solid var(--gris);color:var(--gris-c);font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:2px;text-transform:uppercase;padding:11px;cursor:pointer;margin-top:8px;transition:all .2s}
+.modal-close:hover{border-color:var(--rouge);color:var(--rouge)}
+
+/* END */
+.end{display:none;text-align:center;padding:22px 14px;background:var(--vert-p);border:1px solid var(--vert);margin-top:10px}
+.end.show{display:block}
+.end-title{font-family:'Barlow Condensed',sans-serif;font-size:42px;font-weight:900;text-transform:uppercase;line-height:1}
+.end-title.win{color:var(--vert)}
+.end-title.lose{color:var(--rouge)}
+.end-rarete{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;color:var(--or);margin:6px 0 4px}
+.end-sub{font-size:13px;color:var(--gris-c);margin-bottom:16px}
+.share-btn{background:var(--vert);color:#000;font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;letter-spacing:3px;text-transform:uppercase;border:none;padding:13px 20px;cursor:pointer;width:100%;margin-bottom:6px;transition:background .2s}
+.share-btn:hover{background:#00c060}
+.share-prev{background:#111;border:1px solid var(--gris);padding:10px;margin-top:8px;font-family:monospace;font-size:12px;color:var(--gris-c);white-space:pre;line-height:1.6;display:none}
+.share-prev.show{display:block}
+.copied{color:var(--vert);font-size:13px;margin-top:6px;display:none}
+.copied.show{display:block}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--blanc);color:var(--noir);font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;letter-spacing:1px;padding:10px 20px;z-index:200;transition:transform .3s;white-space:nowrap;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* RARETÉ INFO */
+.rarete-info{background:#0a0a0a;border:1px solid var(--gris);padding:10px 12px;margin-bottom:12px;font-size:12px;color:var(--gris-c);line-height:1.6}
+.rarete-info strong{color:var(--blanc)}
+.ri-scale{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.ri-badge{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;padding:2px 6px;letter-spacing:.5px}
+
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes popIn{0%{transform:scale(.7);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+.pop{animation:popIn .3s ease forwards}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="logo"><span>Foot</span> Grid</div>
+  <div class="tag">⭐ MODE FACILE — TEST</div>
+  <div class="pool-info">Parmi les <strong>500 meilleurs joueurs</strong> des 5 grands championnats 2025/26</div>
+</header>
+
+<div class="scoreboard">
+  <div class="sc-item"><div class="sc-num" id="sc-found">0/9</div><div class="sc-label">Trouvés</div></div>
+  <div class="sc-item"><div class="sc-num" id="sc-rarete">—</div><div class="sc-label">Rareté moy.</div></div>
+  <div class="sc-item"><div class="sc-num" id="sc-err">0/4</div><div class="sc-label">Erreurs</div></div>
+</div>
+
+<div class="errors-row" id="errors-row">
+  <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+</div>
+
+<div class="rarete-info">
+  🏆 <strong>Score de rareté</strong> — trouve les joueurs les moins évidents pour maximiser ton score.
+  <div class="ri-scale">
+    <span class="ri-badge gold">≥80% RARE</span>
+    <span class="ri-badge silver">50-79% MOYEN</span>
+    <span class="ri-badge bronze">20-49% COMMUN</span>
+    <span class="ri-badge common">&lt;20% ÉVIDENT</span>
+  </div>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<div class="end" id="end">
+  <div class="end-title" id="end-title">BRAVO !</div>
+  <div class="end-rarete" id="end-rarete"></div>
+  <div class="end-sub" id="end-sub"></div>
+  <button class="share-btn" onclick="shareResult()">📱 Partager sur WhatsApp</button>
+  <div class="share-prev" id="share-prev"></div>
+  <div class="copied" id="copied">✅ Copié !</div>
+</div>
+
+</div>
+
+<div class="modal-overlay" id="modal-overlay" onclick="closeOut(event)">
+<div class="modal">
+  <div class="modal-hint" id="modal-hint"></div>
+  <div class="modal-pool">Pool : <strong>500 meilleurs joueurs des 5 grands championnats 2025/26</strong></div>
+  <input class="search-input" id="search-input" placeholder="NOM DU JOUEUR..." autocomplete="off" autocorrect="off" spellcheck="false" oninput="onSearch(this.value)">
+  <div class="suggestions" id="suggestions"></div>
+  <button class="modal-close" onclick="closeModal()">✕ Annuler</button>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SOLUTIONS = {"attaquant-champion_monde": [{"nom": "Kylian Mbappé", "rarete": 4}, {"nom": "Erling Haaland", "rarete": 8}, {"nom": "Vinicius Junior", "rarete": 12}, {"nom": "Ousmane Dembélé", "rarete": 17}, {"nom": "Julián Alvarez", "rarete": 21}, {"nom": "Lautaro Martínez", "rarete": 25}, {"nom": "João Pedro", "rarete": 29}, {"nom": "Pedro Neto", "rarete": 33}, {"nom": "Rodrygo", "rarete": 38}, {"nom": "Christian Pulisic", "rarete": 42}, {"nom": "Kai Havertz", "rarete": 46}, {"nom": "Noni Madueke", "rarete": 50}, {"nom": "Ademola Lookman", "rarete": 54}, {"nom": "Nicolas Jackson", "rarete": 58}, {"nom": "Dominic Solanke", "rarete": 62}, {"nom": "Liam Delap", "rarete": 67}, {"nom": "Mohamed Salah", "rarete": 71}, {"nom": "Oscar Bobb", "rarete": 75}, {"nom": "Christopher Nkunku", "rarete": 79}, {"nom": "Jack Grealish", "rarete": 83}, {"nom": "Dominic Calvert-Lewin", "rarete": 88}, {"nom": "Tyrique George", "rarete": 92}, {"nom": "Thiago Almada", "rarete": 96}, {"nom": "Serge Gnabry", "rarete": 100}], "attaquant-vainqueur_c1": [{"nom": "Erling Haaland", "rarete": 5}, {"nom": "Vinicius Junior", "rarete": 11}, {"nom": "Ousmane Dembélé", "rarete": 16}, {"nom": "Khvicha Kvaratskhelia", "rarete": 21}, {"nom": "Désiré Doué", "rarete": 26}, {"nom": "Julián Alvarez", "rarete": 32}, {"nom": "Bradley Barcola", "rarete": 37}, {"nom": "Rodrygo", "rarete": 42}, {"nom": "Christian Pulisic", "rarete": 47}, {"nom": "Kai Havertz", "rarete": 53}, {"nom": "Gonçalo Ramos", "rarete": 58}, {"nom": "Brahim Díaz", "rarete": 63}, {"nom": "Ibrahim Mbaye", "rarete": 68}, {"nom": "Gonzalo García", "rarete": 74}, {"nom": "Mohamed Salah", "rarete": 79}, {"nom": "Jack Grealish", "rarete": 84}, {"nom": "Joshua Zirkzee", "rarete": 89}, {"nom": "Randal Kolo Muani", "rarete": 95}, {"nom": "Serge Gnabry", "rarete": 100}], "attaquant-real_madrid": [{"nom": "Kylian Mbappé", "rarete": 12}, {"nom": "Vinicius Junior", "rarete": 25}, {"nom": "Rodrygo", "rarete": 38}, {"nom": "Franco Mastantuono", "rarete": 50}, {"nom": "Endrick", "rarete": 62}, {"nom": "Brahim Díaz", "rarete": 75}, {"nom": "Takefusa Kubo", "rarete": 88}, {"nom": "Gonzalo García", "rarete": 100}], "milieu-champion_monde": [{"nom": "Federico Valverde", "rarete": 4}, {"nom": "Jamal Musiala", "rarete": 9}, {"nom": "Cole Palmer", "rarete": 13}, {"nom": "Moisés Caicedo", "rarete": 17}, {"nom": "Enzo Fernández", "rarete": 22}, {"nom": "Phil Foden", "rarete": 26}, {"nom": "Alexis Mac Allister", "rarete": 30}, {"nom": "Aurélien Tchouaméni", "rarete": 35}, {"nom": "Rodri", "rarete": 39}, {"nom": "Eduardo Camavinga", "rarete": 43}, {"nom": "Andrey Santos", "rarete": 48}, {"nom": "Joshua Kimmich", "rarete": 52}, {"nom": "Curtis Jones", "rarete": 57}, {"nom": "Conor Gallagher", "rarete": 61}, {"nom": "Kiernan Dewsbury-Hall", "rarete": 65}, {"nom": "Exequiel Palacios", "rarete": 70}, {"nom": "Mason Mount", "rarete": 74}, {"nom": "Assan Ouédraogo", "rarete": 78}, {"nom": "Bernardo Silva", "rarete": 83}, {"nom": "Roméo Lavia", "rarete": 87}, {"nom": "Emile Smith Rowe", "rarete": 91}, {"nom": "Harvey Elliott", "rarete": 96}, {"nom": "Yan Couto", "rarete": 100}], "milieu-vainqueur_c1": [{"nom": "Jude Bellingham", "rarete": 4}, {"nom": "Federico Valverde", "rarete": 9}, {"nom": "Jamal Musiala", "rarete": 13}, {"nom": "Vitinha", "rarete": 17}, {"nom": "João Neves", "rarete": 22}, {"nom": "Cole Palmer", "rarete": 26}, {"nom": "Arda Güler", "rarete": 30}, {"nom": "Phil Foden", "rarete": 35}, {"nom": "Aurélien Tchouaméni", "rarete": 39}, {"nom": "Nico Paz", "rarete": 43}, {"nom": "Rodri", "rarete": 48}, {"nom": "Warren Zaïre-Emery", "rarete": 52}, {"nom": "Eduardo Camavinga", "rarete": 57}, {"nom": "Fabián Ruiz", "rarete": 61}, {"nom": "Senny Mayulu", "rarete": 65}, {"nom": "Joshua Kimmich", "rarete": 70}, {"nom": "Curtis Jones", "rarete": 74}, {"nom": "Malik Tillman", "rarete": 78}, {"nom": "Máximo Perrone", "rarete": 83}, {"nom": "Mason Mount", "rarete": 87}, {"nom": "Kang-in Lee", "rarete": 91}, {"nom": "Bernardo Silva", "rarete": 96}, {"nom": "Billy Gilmour", "rarete": 100}], "milieu-real_madrid": [{"nom": "Jude Bellingham", "rarete": 14}, {"nom": "Federico Valverde", "rarete": 29}, {"nom": "Arda Güler", "rarete": 43}, {"nom": "Aurélien Tchouaméni", "rarete": 57}, {"nom": "Martin Ødegaard", "rarete": 71}, {"nom": "Eduardo Camavinga", "rarete": 86}, {"nom": "Thiago Pitarch", "rarete": 100}], "defenseur-champion_monde": [{"nom": "Achraf Hakimi", "rarete": 4}, {"nom": "Josko Gvardiol", "rarete": 8}, {"nom": "Trent Alexander-Arnold", "rarete": 12}, {"nom": "Marc Guéhi", "rarete": 17}, {"nom": "Rúben Dias", "rarete": 21}, {"nom": "Reece James", "rarete": 25}, {"nom": "Marc Cucurella", "rarete": 29}, {"nom": "Cristian Romero", "rarete": 33}, {"nom": "Levi Colwill", "rarete": 38}, {"nom": "Alphonso Davies", "rarete": 42}, {"nom": "Matheus Nunes", "rarete": 46}, {"nom": "Trevoh Chalobah", "rarete": 50}, {"nom": "Ezri Konsa", "rarete": 54}, {"nom": "Lisandro Martínez", "rarete": 58}, {"nom": "Malo Gusto", "rarete": 62}, {"nom": "Sepp van den Berg", "rarete": 67}, {"nom": "Rico Lewis", "rarete": 71}, {"nom": "Finn Jeltsch", "rarete": 75}, {"nom": "Éder Militão", "rarete": 79}, {"nom": "Josh Acheampong", "rarete": 83}, {"nom": "Mamadou Sarr", "rarete": 88}, {"nom": "Marcos Llorente", "rarete": 92}, {"nom": "Lucas Hernández", "rarete": 96}, {"nom": "Fikayo Tomori", "rarete": 100}], "defenseur-vainqueur_c1": [{"nom": "Achraf Hakimi", "rarete": 7}, {"nom": "Nuno Mendes", "rarete": 14}, {"nom": "Willian Pacho", "rarete": 21}, {"nom": "Trent Alexander-Arnold", "rarete": 29}, {"nom": "Rúben Dias", "rarete": 36}, {"nom": "Reece James", "rarete": 43}, {"nom": "Alphonso Davies", "rarete": 50}, {"nom": "Rico Lewis", "rarete": 57}, {"nom": "Marquinhos", "rarete": 64}, {"nom": "Éder Militão", "rarete": 71}, {"nom": "Jacobo Ramón", "rarete": 79}, {"nom": "Marcos Llorente", "rarete": 86}, {"nom": "Lucas Hernández", "rarete": 93}, {"nom": "Lucas Beraldo", "rarete": 100}], "defenseur-real_madrid": [{"nom": "Achraf Hakimi", "rarete": 14}, {"nom": "Trent Alexander-Arnold", "rarete": 29}, {"nom": "Dean Huijsen", "rarete": 43}, {"nom": "Álvaro Carreras", "rarete": 57}, {"nom": "Éder Militão", "rarete": 71}, {"nom": "Raúl Asencio", "rarete": 86}, {"nom": "Marcos Llorente", "rarete": 100}]};
+
+const JOUEURS = [{"nom": "Kylian Mbappé", "pos": "Attaquant", "val": 200, "nat": ["France", "Cameroun"]}, {"nom": "Lamine Yamal", "pos": "Attaquant", "val": 200, "nat": ["Espagne"]}, {"nom": "Erling Haaland", "pos": "Attaquant", "val": 200, "nat": ["Norvège"]}, {"nom": "Vinicius Junior", "pos": "Attaquant", "val": 150, "nat": ["Brésil", "Espagne"]}, {"nom": "Pedri", "pos": "Milieu", "val": 150, "nat": ["Espagne"]}, {"nom": "Jude Bellingham", "pos": "Milieu", "val": 140, "nat": ["Angleterre", "Irlande"]}, {"nom": "Michael Olise", "pos": "Attaquant", "val": 140, "nat": ["France", "Angleterre"]}, {"nom": "Federico Valverde", "pos": "Milieu", "val": 120, "nat": ["Uruguay", "Espagne"]}, {"nom": "Jamal Musiala", "pos": "Milieu", "val": 120, "nat": ["Allemagne", "Angleterre"]}, {"nom": "Declan Rice", "pos": "Milieu", "val": 120, "nat": ["Angleterre", "Irlande"]}, {"nom": "Bukayo Saka", "pos": "Attaquant", "val": 120, "nat": ["Angleterre", "Nigeria"]}, {"nom": "Vitinha", "pos": "Milieu", "val": 110, "nat": ["Portugal"]}, {"nom": "João Neves", "pos": "Milieu", "val": 110, "nat": ["Portugal"]}, {"nom": "Cole Palmer", "pos": "Milieu", "val": 110, "nat": ["Angleterre", "St. Kitts & Nevis"]}, {"nom": "Florian Wirtz", "pos": "Milieu", "val": 110, "nat": ["Allemagne"]}, {"nom": "Moisés Caicedo", "pos": "Milieu", "val": 110, "nat": ["Équateur"]}, {"nom": "Ousmane Dembélé", "pos": "Attaquant", "val": 100, "nat": ["France"]}, {"nom": "Fermín López", "pos": "Milieu", "val": 100, "nat": ["Espagne"]}, {"nom": "Alexander Isak", "pos": "Attaquant", "val": 100, "nat": ["Suède", "Eritrea"]}, {"nom": "Dominik Szoboszlai", "pos": "Milieu", "val": 100, "nat": ["Hongrie"]}, {"nom": "Khvicha Kvaratskhelia", "pos": "Attaquant", "val": 90, "nat": ["Géorgie"]}, {"nom": "Désiré Doué", "pos": "Attaquant", "val": 90, "nat": ["France", "Côte d'Ivoire"]}, {"nom": "Julián Alvarez", "pos": "Attaquant", "val": 90, "nat": ["Argentine", "Italie"]}, {"nom": "Arda Güler", "pos": "Milieu", "val": 90, "nat": ["Turquie"]}, {"nom": "Ryan Gravenberch", "pos": "Milieu", "val": 90, "nat": ["Pays-Bas", "Suriname"]}, {"nom": "William Saliba", "pos": "Défenseur", "val": 90, "nat": ["France", "Cameroun"]}, {"nom": "Enzo Fernández", "pos": "Milieu", "val": 90, "nat": ["Argentine"]}, {"nom": "Hugo Ekitiké", "pos": "Attaquant", "val": 90, "nat": ["France", "Cameroun"]}, {"nom": "Lautaro Martínez", "pos": "Attaquant", "val": 85, "nat": ["Argentine"]}, {"nom": "Achraf Hakimi", "pos": "Défenseur", "val": 80, "nat": ["Maroc", "Espagne"]}, {"nom": "Raphinha", "pos": "Attaquant", "val": 80, "nat": ["Brésil", "Italie"]}, {"nom": "Pau Cubarsí", "pos": "Défenseur", "val": 80, "nat": ["Espagne"]}, {"nom": "Estêvão", "pos": "Attaquant", "val": 80, "nat": ["Brésil"]}, {"nom": "Sandro Tonali", "pos": "Milieu", "val": 80, "nat": ["Italie"]}, {"nom": "Phil Foden", "pos": "Milieu", "val": 80, "nat": ["Angleterre"]}, {"nom": "Bryan Mbeumo", "pos": "Attaquant", "val": 80, "nat": ["Cameroun", "France"]}, {"nom": "Martín Zubimendi", "pos": "Milieu", "val": 80, "nat": ["Espagne"]}, {"nom": "Morgan Rogers", "pos": "Milieu", "val": 80, "nat": ["Angleterre"]}, {"nom": "Alexis Mac Allister", "pos": "Milieu", "val": 80, "nat": ["Argentine", "Italie"]}, {"nom": "Nuno Mendes", "pos": "Défenseur", "val": 75, "nat": ["Portugal"]}, {"nom": "Aurélien Tchouaméni", "pos": "Milieu", "val": 75, "nat": ["France", "Cameroun"]}, {"nom": "Yan Diomande", "pos": "Attaquant", "val": 75, "nat": ["Côte d'Ivoire"]}, {"nom": "Aleksandar Pavlovic", "pos": "Milieu", "val": 75, "nat": ["Allemagne", "Serbie"]}, {"nom": "Kenan Yıldız", "pos": "Attaquant", "val": 75, "nat": ["Turquie", "Allemagne"]}, {"nom": "Gabriel", "pos": "Défenseur", "val": 75, "nat": ["Brésil"]}, {"nom": "Bruno Guimarães", "pos": "Milieu", "val": 75, "nat": ["Brésil", "Espagne"]}, {"nom": "Antoine Semenyo", "pos": "Attaquant", "val": 75, "nat": ["Ghana", "Angleterre"]}, {"nom": "João Pedro", "pos": "Attaquant", "val": 75, "nat": ["Brésil"]}, {"nom": "Willian Pacho", "pos": "Défenseur", "val": 70, "nat": ["Équateur"]}, {"nom": "Bradley Barcola", "pos": "Attaquant", "val": 70, "nat": ["France", "Togo"]}, {"nom": "Dayot Upamecano", "pos": "Défenseur", "val": 70, "nat": ["France", "Guinée-Bissau"]}, {"nom": "Luis Díaz", "pos": "Attaquant", "val": 70, "nat": ["Colombie"]}, {"nom": "Alessandro Bastoni", "pos": "Défenseur", "val": 70, "nat": ["Italie"]}, {"nom": "Jurriën Timber", "pos": "Défenseur", "val": 70, "nat": ["Pays-Bas", "Curaçao"]}, {"nom": "Josko Gvardiol", "pos": "Défenseur", "val": 70, "nat": ["Croatie"]}, {"nom": "Matheus Cunha", "pos": "Attaquant", "val": 70, "nat": ["Brésil"]}, {"nom": "Trent Alexander-Arnold", "pos": "Défenseur", "val": 65, "nat": ["Angleterre"]}, {"nom": "Jules Koundé", "pos": "Défenseur", "val": 65, "nat": ["France", "Bénin"]}, {"nom": "Dean Huijsen", "pos": "Défenseur", "val": 65, "nat": ["Espagne", "Pays-Bas"]}, {"nom": "Harry Kane", "pos": "Attaquant", "val": 65, "nat": ["Angleterre", "Irlande"]}, {"nom": "Rafael Leão", "pos": "Attaquant", "val": 65, "nat": ["Portugal", "Angola"]}, {"nom": "Nico Paz", "pos": "Milieu", "val": 65, "nat": ["Argentine", "Espagne"]}, {"nom": "Martin Ødegaard", "pos": "Milieu", "val": 65, "nat": ["Norvège"]}, {"nom": "Viktor Gyökeres", "pos": "Attaquant", "val": 65, "nat": ["Suède", "Hongrie"]}, {"nom": "Rodri", "pos": "Milieu", "val": 65, "nat": ["Espagne"]}, {"nom": "Marc Guéhi", "pos": "Défenseur", "val": 65, "nat": ["Angleterre", "Côte d'Ivoire"]}, {"nom": "Cody Gakpo", "pos": "Attaquant", "val": 65, "nat": ["Pays-Bas", "Togo"]}, {"nom": "Nick Woltemade", "pos": "Attaquant", "val": 65, "nat": ["Allemagne"]}, {"nom": "Jérémy Doku", "pos": "Attaquant", "val": 65, "nat": ["Belgique", "Ghana"]}, {"nom": "Micky van de Ven", "pos": "Défenseur", "val": 65, "nat": ["Pays-Bas"]}, {"nom": "Rayan Cherki", "pos": "Milieu", "val": 65, "nat": ["France", "Algérie"]}, {"nom": "Benjamin Sesko", "pos": "Attaquant", "val": 65, "nat": ["Slovénie"]}, {"nom": "Warren Zaïre-Emery", "pos": "Milieu", "val": 60, "nat": ["France", "Martinique"]}, {"nom": "Dani Olmo", "pos": "Milieu", "val": 60, "nat": ["Espagne"]}, {"nom": "Pablo Barrios", "pos": "Milieu", "val": 60, "nat": ["Espagne"]}, {"nom": "Álvaro Carreras", "pos": "Défenseur", "val": 60, "nat": ["Espagne"]}, {"nom": "Lennart Karl", "pos": "Milieu", "val": 60, "nat": ["Allemagne"]}, {"nom": "Luka Vuskovic", "pos": "Défenseur", "val": 60, "nat": ["Croatie"]}, {"nom": "Rúben Dias", "pos": "Défenseur", "val": 60, "nat": ["Portugal"]}, {"nom": "Omar Marmoush", "pos": "Attaquant", "val": 60, "nat": ["Égypte", "Canada"]}, {"nom": "Tijjani Reijnders", "pos": "Milieu", "val": 60, "nat": ["Pays-Bas"]}, {"nom": "Reece James", "pos": "Défenseur", "val": 60, "nat": ["Angleterre"]}, {"nom": "Eberechi Eze", "pos": "Milieu", "val": 60, "nat": ["Angleterre", "Nigeria"]}, {"nom": "Pedro Neto", "pos": "Attaquant", "val": 60, "nat": ["Portugal"]}, {"nom": "Anthony Gordon", "pos": "Attaquant", "val": 60, "nat": ["Angleterre"]}, {"nom": "Adam Wharton", "pos": "Milieu", "val": 60, "nat": ["Angleterre"]}, {"nom": "Jérémy Jacquet", "pos": "Défenseur", "val": 55, "nat": ["France", "Guadeloupe"]}, {"nom": "Mason Greenwood", "pos": "Attaquant", "val": 55, "nat": ["Angleterre", "Jamaïque"]}, {"nom": "Alejandro Balde", "pos": "Défenseur", "val": 55, "nat": ["Espagne"]}, {"nom": "Nico Schlotterbeck", "pos": "Défenseur", "val": 55, "nat": ["Allemagne"]}, {"nom": "Mohammed Kudus", "pos": "Attaquant", "val": 55, "nat": ["Ghana"]}, {"nom": "Carlos Baleba", "pos": "Milieu", "val": 55, "nat": ["Cameroun"]}, {"nom": "Ayyoub Bouaddi", "pos": "Milieu", "val": 50, "nat": ["France", "Maroc"]}, {"nom": "Maghnes Akliouche", "pos": "Attaquant", "val": 50, "nat": ["France", "Algérie"]}, {"nom": "Ferran Torres", "pos": "Attaquant", "val": 50, "nat": ["Espagne"]}, {"nom": "Rodrygo", "pos": "Attaquant", "val": 50, "nat": ["Brésil", "Espagne"]}, {"nom": "Eduardo Camavinga", "pos": "Milieu", "val": 50, "nat": ["France", "Congo"]}, {"nom": "Nico Williams", "pos": "Attaquant", "val": 50, "nat": ["Espagne", "Ghana"]}, {"nom": "Felix Nmecha", "pos": "Milieu", "val": 50, "nat": ["Allemagne", "Angleterre"]}, {"nom": "Karim Adeyemi", "pos": "Attaquant", "val": 50, "nat": ["Allemagne", "Nigeria"]}, {"nom": "Federico Dimarco", "pos": "Défenseur", "val": 50, "nat": ["Italie"]}, {"nom": "Nicolò Barella", "pos": "Milieu", "val": 50, "nat": ["Italie"]}, {"nom": "Christian Pulisic", "pos": "Attaquant", "val": 50, "nat": ["États-Unis", "Croatie"]}, {"nom": "Marcus Thuram", "pos": "Attaquant", "val": 50, "nat": ["France", "Guadeloupe"]}, {"nom": "Rasmus Højlund", "pos": "Attaquant", "val": 50, "nat": ["Danemark"]}, {"nom": "Manu Koné", "pos": "Milieu", "val": 50, "nat": ["France", "Côte d'Ivoire"]}, {"nom": "Marc Cucurella", "pos": "Défenseur", "val": 50, "nat": ["Espagne"]}, {"nom": "Kai Havertz", "pos": "Attaquant", "val": 50, "nat": ["Allemagne"]}, {"nom": "Cristian Romero", "pos": "Défenseur", "val": 50, "nat": ["Argentine"]}, {"nom": "Ibrahima Konaté", "pos": "Défenseur", "val": 50, "nat": ["France", "Mali"]}, {"nom": "Riccardo Calafiori", "pos": "Défenseur", "val": 50, "nat": ["Italie"]}, {"nom": "Noni Madueke", "pos": "Attaquant", "val": 50, "nat": ["Angleterre", "Nigeria"]}, {"nom": "Amad Diallo", "pos": "Attaquant", "val": 50, "nat": ["Côte d'Ivoire", "Italie"]}, {"nom": "Xavi Simons", "pos": "Milieu", "val": 50, "nat": ["Pays-Bas", "Suriname"]}, {"nom": "Levi Colwill", "pos": "Défenseur", "val": 50, "nat": ["Angleterre"]}, {"nom": "Iliman Ndiaye", "pos": "Attaquant", "val": 50, "nat": ["Sénégal", "France"]}, {"nom": "Piero Hincapié", "pos": "Défenseur", "val": 50, "nat": ["Équateur"]}, {"nom": "Igor Thiago", "pos": "Attaquant", "val": 50, "nat": ["Brésil", "Bulgarie"]}, {"nom": "Nico O'Reilly", "pos": "Défenseur", "val": 50, "nat": ["Angleterre", "Jamaïque"]}, {"nom": "Kobbie Mainoo", "pos": "Milieu", "val": 50, "nat": ["Angleterre", "Ghana"]}, {"nom": "Leny Yoro", "pos": "Défenseur", "val": 50, "nat": ["France", "Côte d'Ivoire"]}, {"nom": "Ilya Zabarnyi", "pos": "Défenseur", "val": 45, "nat": ["Ukraine"]}, {"nom": "Franco Mastantuono", "pos": "Attaquant", "val": 45, "nat": ["Argentine", "Italie"]}, {"nom": "Frenkie de Jong", "pos": "Milieu", "val": 45, "nat": ["Pays-Bas"]}, {"nom": "Álex Baena", "pos": "Attaquant", "val": 45, "nat": ["Espagne"]}, {"nom": "Alphonso Davies", "pos": "Défenseur", "val": 45, "nat": ["Canada", "Liberia"]}, {"nom": "Angelo Stiller", "pos": "Milieu", "val": 45, "nat": ["Allemagne"]}, {"nom": "Castello Lukeba", "pos": "Défenseur", "val": 45, "nat": ["France", "Angola"]}, {"nom": "Jarell Quansah", "pos": "Défenseur", "val": 45, "nat": ["Angleterre", "Écosse"]}, {"nom": "Can Uzun", "pos": "Milieu", "val": 45, "nat": ["Turquie", "Allemagne"]}, {"nom": "Scott McTominay", "pos": "Milieu", "val": 45, "nat": ["Écosse", "Angleterre"]}, {"nom": "Pio Esposito", "pos": "Attaquant", "val": 45, "nat": ["Italie"]}, {"nom": "Gianluigi Donnarumma", "pos": "Gardien", "val": 45, "nat": ["Italie"]}, {"nom": "Jørgen Strand Larsen", "pos": "Attaquant", "val": 45, "nat": ["Norvège"]}, {"nom": "Nico González", "pos": "Milieu", "val": 45, "nat": ["Espagne"]}, {"nom": "Amadou Onana", "pos": "Milieu", "val": 45, "nat": ["Belgique", "Sénégal"]}, {"nom": "Malick Thiaw", "pos": "Défenseur", "val": 45, "nat": ["Allemagne", "Finlande"]}, {"nom": "Matheus Nunes", "pos": "Défenseur", "val": 45, "nat": ["Portugal", "Brésil"]}, {"nom": "Gabriel Martinelli", "pos": "Attaquant", "val": 45, "nat": ["Brésil", "Italie"]}, {"nom": "Jarrad Branthwaite", "pos": "Défenseur", "val": 45, "nat": ["Angleterre"]}, {"nom": "Andrey Santos", "pos": "Milieu", "val": 45, "nat": ["Brésil"]}, {"nom": "Fabián Ruiz", "pos": "Milieu", "val": 40, "nat": ["Espagne"]}, {"nom": "Ethan Nwaneri", "pos": "Milieu", "val": 40, "nat": ["Angleterre", "Nigeria"]}, {"nom": "Senny Mayulu", "pos": "Milieu", "val": 40, "nat": ["France", "RD Congo"]}, {"nom": "Marcus Rashford", "pos": "Attaquant", "val": 40, "nat": ["Angleterre", "St. Kitts & Nevis"]}, {"nom": "Ademola Lookman", "pos": "Attaquant", "val": 40, "nat": ["Nigeria", "Angleterre"]}, {"nom": "Pape Gueye", "pos": "Milieu", "val": 40, "nat": ["Sénégal", "France"]}, {"nom": "Joan García", "pos": "Gardien", "val": 40, "nat": ["Espagne"]}, {"nom": "Antony", "pos": "Attaquant", "val": 40, "nat": ["Brésil"]}, {"nom": "Alberto Moleiro", "pos": "Attaquant", "val": 40, "nat": ["Espagne", "Cuba"]}, {"nom": "Giuliano Simeone", "pos": "Attaquant", "val": 40, "nat": ["Argentine", "Italie"]}, {"nom": "Christian Kofane", "pos": "Attaquant", "val": 40, "nat": ["Cameroun"]}, {"nom": "Joshua Kimmich", "pos": "Milieu", "val": 40, "nat": ["Allemagne"]}, {"nom": "Gregor Kobel", "pos": "Gardien", "val": 40, "nat": ["Suisse"]}, {"nom": "Serhou Guirassy", "pos": "Attaquant", "val": 40, "nat": ["Guinée", "France"]}, {"nom": "Jamie Leweling", "pos": "Attaquant", "val": 40, "nat": ["Allemagne", "Ghana"]}, {"nom": "Maximilian Beier", "pos": "Attaquant", "val": 40, "nat": ["Allemagne"]}, {"nom": "Nicolas Jackson", "pos": "Attaquant", "val": 40, "nat": ["Sénégal", "Gambie"]}, {"nom": "Tom Bischof", "pos": "Milieu", "val": 40, "nat": ["Allemagne"]}, {"nom": "Ibrahim Maza", "pos": "Milieu", "val": 40, "nat": ["Algérie", "Allemagne"]}, {"nom": "Moise Kean", "pos": "Attaquant", "val": 40, "nat": ["Italie", "Côte d'Ivoire"]}, {"nom": "Yann Bisseck", "pos": "Défenseur", "val": 40, "nat": ["Allemagne", "Cameroun"]}, {"nom": "Khéphren Thuram", "pos": "Milieu", "val": 40, "nat": ["France", "Guadeloupe"]}, {"nom": "Éderson", "pos": "Milieu", "val": 40, "nat": ["Brésil"]}, {"nom": "Wesley", "pos": "Défenseur", "val": 40, "nat": ["Brésil"]}, {"nom": "Yankuba Minteh", "pos": "Attaquant", "val": 40, "nat": ["Gambie"]}, {"nom": "Bruno Fernandes", "pos": "Milieu", "val": 40, "nat": ["Portugal"]}, {"nom": "Matthijs de Ligt", "pos": "Défenseur", "val": 40, "nat": ["Pays-Bas"]}, {"nom": "Trevoh Chalobah", "pos": "Défenseur", "val": 40, "nat": ["Angleterre", "Sierra Leone"]}, {"nom": "Boubacar Kamara", "pos": "Milieu", "val": 40, "nat": ["France", "Sénégal"]}, {"nom": "Ezri Konsa", "pos": "Défenseur", "val": 40, "nat": ["Angleterre", "RD Congo"]}, {"nom": "Maxence Lacroix", "pos": "Défenseur", "val": 40, "nat": ["France", "Guadeloupe"]}, {"nom": "Lisandro Martínez", "pos": "Défenseur", "val": 40, "nat": ["Argentine"]}, {"nom": "Tino Livramento", "pos": "Défenseur", "val": 40, "nat": ["Angleterre", "Écosse"]}, {"nom": "Pedro Porro", "pos": "Défenseur", "val": 40, "nat": ["Espagne"]}, {"nom": "Bart Verbruggen", "pos": "Gardien", "val": 40, "nat": ["Pays-Bas"]}, {"nom": "Rayan Aït-Nouri", "pos": "Défenseur", "val": 40, "nat": ["Algérie", "France"]}, {"nom": "Anthony Elanga", "pos": "Attaquant", "val": 40, "nat": ["Suède", "Cameroun"]}, {"nom": "Milos Kerkez", "pos": "Défenseur", "val": 40, "nat": ["Hongrie", "Serbie"]}, {"nom": "Savinho", "pos": "Attaquant", "val": 40, "nat": ["Brésil"]}, {"nom": "Alejandro Garnacho", "pos": "Attaquant", "val": 40, "nat": ["Argentine", "Espagne"]}, {"nom": "Lucas Bergvall", "pos": "Milieu", "val": 40, "nat": ["Suède"]}, {"nom": "Joaquín Panichelli", "pos": "Attaquant", "val": 35, "nat": ["Argentine"]}, {"nom": "Gonçalo Ramos", "pos": "Attaquant", "val": 35, "nat": ["Portugal"]}, {"nom": "Igor Paixão", "pos": "Attaquant", "val": 35, "nat": ["Brésil"]}, {"nom": "Valentín Barco", "pos": "Milieu", "val": 35, "nat": ["Argentine"]}, {"nom": "Lamine Camara", "pos": "Milieu", "val": 35, "nat": ["Sénégal"]}, {"nom": "Endrick", "pos": "Attaquant", "val": 35, "nat": ["Brésil"]}, {"nom": "Brahim Díaz", "pos": "Attaquant", "val": 35, "nat": ["Maroc", "Espagne"]}, {"nom": "Dávid Hancko", "pos": "Défenseur", "val": 35, "nat": ["Slovaquie"]}, {"nom": "Eric García", "pos": "Défenseur", "val": 35, "nat": ["Espagne"]}, {"nom": "Oihan Sancet", "pos": "Milieu", "val": 35, "nat": ["Espagne"]}, {"nom": "Mikel Jauregizar", "pos": "Milieu", "val": 35, "nat": ["Espagne"]}, {"nom": "Bazoumana Touré", "pos": "Attaquant", "val": 35, "nat": ["Côte d'Ivoire"]}, {"nom": "Said El Mala", "pos": "Attaquant", "val": 35, "nat": ["Allemagne"]}, {"nom": "Jonathan Burkardt", "pos": "Attaquant", "val": 35, "nat": ["Allemagne"]}, {"nom": "Josip Stanisic", "pos": "Défenseur", "val": 35, "nat": ["Croatie", "Allemagne"]}, {"nom": "Edmond Tapsoba", "pos": "Défenseur", "val": 35, "nat": ["Burkina Faso"]}, {"nom": "Nathaniel Brown", "pos": "Défenseur", "val": 35, "nat": ["Allemagne", "États-Unis"]}, {"nom": "Johan Manzambi", "pos": "Milieu", "val": 35, "nat": ["Suisse"]}, {"nom": "Donyell Malen", "pos": "Attaquant", "val": 35, "nat": ["Pays-Bas", "Suriname"]}, {"nom": "Mile Svilar", "pos": "Gardien", "val": 35, "nat": ["Serbie", "Belgique"]}, {"nom": "Dušan Vlahović", "pos": "Attaquant", "val": 35, "nat": ["Serbie"]}, {"nom": "Evan Ndicka", "pos": "Défenseur", "val": 35, "nat": ["Côte d'Ivoire", "France"]}, {"nom": "Alessandro Buongiorno", "pos": "Défenseur", "val": 35, "nat": ["Italie"]}, {"nom": "Charles De Ketelaere", "pos": "Milieu", "val": 35, "nat": ["Belgique"]}, {"nom": "Bremer", "pos": "Défenseur", "val": 35, "nat": ["Brésil"]}, {"nom": "Jonathan David", "pos": "Attaquant", "val": 35, "nat": ["Canada", "États-Unis"]}, {"nom": "Strahinja Pavlović", "pos": "Défenseur", "val": 35, "nat": ["Serbie"]}, {"nom": "Matías Soulé", "pos": "Attaquant", "val": 35, "nat": ["Argentine", "Italie"]}, {"nom": "Ange-Yoan Bonny", "pos": "Attaquant", "val": 35, "nat": ["Côte d'Ivoire", "France"]}, {"nom": "Santiago Castro", "pos": "Attaquant", "val": 35, "nat": ["Argentine", "Italie"]}, {"nom": "Youri Tielemans", "pos": "Milieu", "val": 35, "nat": ["Belgique", "RD Congo"]}, {"nom": "Dominic Solanke", "pos": "Attaquant", "val": 35, "nat": ["Angleterre", "Nigeria"]}, {"nom": "David Raya", "pos": "Gardien", "val": 35, "nat": ["Espagne"]}, {"nom": "Sven Botman", "pos": "Défenseur", "val": 35, "nat": ["Pays-Bas"]}, {"nom": "Ismaïla Sarr", "pos": "Attaquant", "val": 35, "nat": ["Sénégal"]}, {"nom": "Jean-Philippe Mateta", "pos": "Attaquant", "val": 35, "nat": ["France", "RD Congo"]}, {"nom": "Dejan Kulusevski", "pos": "Milieu", "val": 35, "nat": ["Suède", "Macédoine du Nord"]}, {"nom": "Curtis Jones", "pos": "Milieu", "val": 35, "nat": ["Angleterre"]}, {"nom": "Brennan Johnson", "pos": "Attaquant", "val": 35, "nat": ["Pays de Galles", "Angleterre"]}, {"nom": "Kevin Schade", "pos": "Attaquant", "val": 35, "nat": ["Allemagne", "Nigeria"]}, {"nom": "Jeremie Frimpong", "pos": "Défenseur", "val": 35, "nat": ["Pays-Bas", "Ghana"]}, {"nom": "Conor Gallagher", "pos": "Milieu", "val": 35, "nat": ["Angleterre"]}, {"nom": "Jacob Ramsey", "pos": "Milieu", "val": 35, "nat": ["Angleterre"]}, {"nom": "James Garner", "pos": "Milieu", "val": 35, "nat": ["Angleterre"]}, {"nom": "Destiny Udogie", "pos": "Défenseur", "val": 35, "nat": ["Italie", "Nigeria"]}, {"nom": "Yéremy Pino", "pos": "Attaquant", "val": 35, "nat": ["Espagne"]}, {"nom": "Jan Paul van Hecke", "pos": "Défenseur", "val": 35, "nat": ["Pays-Bas"]}, {"nom": "Malo Gusto", "pos": "Défenseur", "val": 35, "nat": ["France", "Martinique"]}, {"nom": "Cristhian Mosquera", "pos": "Défenseur", "val": 35, "nat": ["Espagne", "Colombie"]}, {"nom": "Lewis Hall", "pos": "Défenseur", "val": 35, "nat": ["Angleterre"]}, {"nom": "Jamie Gittens", "pos": "Attaquant", "val": 35, "nat": ["Angleterre", "Barbados"]}, {"nom": "João Gomes", "pos": "Milieu", "val": 35, "nat": ["Brésil"]}, {"nom": "Abdukodir Khusanov", "pos": "Défenseur", "val": 35, "nat": ["Uzbekistan"]}, {"nom": "Dango Ouattara", "pos": "Attaquant", "val": 35, "nat": ["Burkina Faso"]}, {"nom": "Michael Kayode", "pos": "Défenseur", "val": 35, "nat": ["Italie", "Nigeria"]}, {"nom": "Myles Lewis-Skelly", "pos": "Défenseur", "val": 35, "nat": ["Angleterre", "Barbados"]}, {"nom": "Jorrel Hato", "pos": "Défenseur", "val": 35, "nat": ["Pays-Bas", "Curaçao"]}, {"nom": "Archie Gray", "pos": "Milieu", "val": 35, "nat": ["Angleterre", "Écosse"]}, {"nom": "Patrick Dorgu", "pos": "Défenseur", "val": 35, "nat": ["Danemark", "Nigeria"]}, {"nom": "Konrad Laimer", "pos": "Défenseur", "val": 32, "nat": ["Autriche"]}, {"nom": "Bilal El Khannouss", "pos": "Milieu", "val": 32, "nat": ["Maroc", "Belgique"]}, {"nom": "Antonio Nusa", "pos": "Attaquant", "val": 32, "nat": ["Norvège", "Nigeria"]}, {"nom": "Hugo Larsson", "pos": "Milieu", "val": 32, "nat": ["Suède"]}, {"nom": "Loïs Openda", "pos": "Attaquant", "val": 32, "nat": ["Belgique", "Maroc"]}, {"nom": "Pierre Kalulu", "pos": "Défenseur", "val": 32, "nat": ["France", "RD Congo"]}, {"nom": "Harvey Barnes", "pos": "Attaquant", "val": 32, "nat": ["Angleterre", "Écosse"]}, {"nom": "Kiernan Dewsbury-Hall", "pos": "Milieu", "val": 32, "nat": ["Angleterre", "Irlande"]}, {"nom": "Sepp van den Berg", "pos": "Défenseur", "val": 32, "nat": ["Pays-Bas"]}, {"nom": "Pape Matar Sarr", "pos": "Milieu", "val": 32, "nat": ["Sénégal"]}, {"nom": "Liam Delap", "pos": "Attaquant", "val": 32, "nat": ["Angleterre", "Irlande"]}, {"nom": "Rico Lewis", "pos": "Défenseur", "val": 32, "nat": ["Angleterre", "Jamaïque"]}, {"nom": "Habib Diarra", "pos": "Milieu", "val": 32, "nat": ["Sénégal", "France"]}, {"nom": "Ibrahim Mbaye", "pos": "Attaquant", "val": 30, "nat": ["Sénégal", "France"]}, {"nom": "Marquinhos", "pos": "Défenseur", "val": 30, "nat": ["Brésil", "Portugal"]}, {"nom": "Lucas Chevalier", "pos": "Gardien", "val": 30, "nat": ["France"]}, {"nom": "Folarin Balogun", "pos": "Attaquant", "val": 30, "nat": ["États-Unis", "Angleterre"]}, {"nom": "Matías Fernández-Pardo", "pos": "Attaquant", "val": 30, "nat": ["Espagne", "Belgique"]}, {"nom": "Malick Fofana", "pos": "Attaquant", "val": 30, "nat": ["Belgique", "Guinée"]}, {"nom": "Mamadou Sangaré", "pos": "Milieu", "val": 30, "nat": ["Mali"]}, {"nom": "Vitor Reis", "pos": "Défenseur", "val": 30, "nat": ["Brésil"]}, {"nom": "Marc Bernal", "pos": "Milieu", "val": 30, "nat": ["Espagne"]}, {"nom": "Takefusa Kubo", "pos": "Attaquant", "val": 30, "nat": ["Japon"]}, {"nom": "Gavi", "pos": "Milieu", "val": 30, "nat": ["Espagne"]}, {"nom": "Abde Ezzalzouli", "pos": "Attaquant", "val": 30, "nat": ["Maroc", "Espagne"]}, {"nom": "Gonzalo García", "pos": "Attaquant", "val": 30, "nat": ["Espagne"]}, {"nom": "Jonathan Tah", "pos": "Défenseur", "val": 30, "nat": ["Allemagne", "Côte d'Ivoire"]}, {"nom": "Christoph Baumgartner", "pos": "Milieu", "val": 30, "nat": ["Autriche"]}, {"nom": "Exequiel Palacios", "pos": "Milieu", "val": 30, "nat": ["Argentine"]}, {"nom": "Malik Tillman", "pos": "Milieu", "val": 30, "nat": ["États-Unis", "Allemagne"]}, {"nom": "Fisnik Asllani", "pos": "Attaquant", "val": 30, "nat": ["Kosovo", "Allemagne"]}, {"nom": "Jobe Bellingham", "pos": "Milieu", "val": 30, "nat": ["Angleterre", "Irlande"]}, {"nom": "Finn Jeltsch", "pos": "Défenseur", "val": 30, "nat": ["Allemagne"]}, {"nom": "Rômulo", "pos": "Attaquant", "val": 30, "nat": ["Brésil"]}, {"nom": "Assane Diao", "pos": "Attaquant", "val": 30, "nat": ["Sénégal", "Espagne"]}, {"nom": "Jesús Rodríguez", "pos": "Attaquant", "val": 30, "nat": ["Espagne"]}, {"nom": "Weston McKennie", "pos": "Milieu", "val": 30, "nat": ["États-Unis"]}, {"nom": "Andrea Cambiaso", "pos": "Défenseur", "val": 30, "nat": ["Italie"]}, {"nom": "Francisco Conceição", "pos": "Attaquant", "val": 30, "nat": ["Portugal"]}, {"nom": "Giorgio Scalvini", "pos": "Défenseur", "val": 30, "nat": ["Italie"]}, {"nom": "Ardon Jashari", "pos": "Milieu", "val": 30, "nat": ["Suisse", "Macédoine du Nord"]}, {"nom": "Mario Gila", "pos": "Défenseur", "val": 30, "nat": ["Espagne"]}, {"nom": "Petar Sučić", "pos": "Milieu", "val": 30, "nat": ["Croatie", "Bosnie"]}, {"nom": "Máximo Perrone", "pos": "Milieu", "val": 30, "nat": ["Argentine", "Espagne"]}, {"nom": "Marco Palestra", "pos": "Défenseur", "val": 30, "nat": ["Italie"]}, {"nom": "Mohamed Salah", "pos": "Attaquant", "val": 30, "nat": ["Égypte"]}, {"nom": "Ollie Watkins", "pos": "Attaquant", "val": 30, "nat": ["Angleterre"]}, {"nom": "Joelinton", "pos": "Milieu", "val": 30, "nat": ["Brésil"]}, {"nom": "Ben White", "pos": "Défenseur", "val": 30, "nat": ["Angleterre"]}, {"nom": "Mikel Merino", "pos": "Milieu", "val": 30, "nat": ["Espagne"]}, {"nom": "Mason Mount", "pos": "Milieu", "val": 30, "nat": ["Angleterre"]}, {"nom": "Diogo Dalot", "pos": "Défenseur", "val": 30, "nat": ["Portugal"]}, {"nom": "Ferdi Kadıoğlu", "pos": "Défenseur", "val": 30, "nat": ["Turquie", "Pays-Bas"]}, {"nom": "Yoane Wissa", "pos": "Attaquant", "val": 30, "nat": ["RD Congo", "France"]}, {"nom": "Nathan Collins", "pos": "Défenseur", "val": 30, "nat": ["Irlande"]}, {"nom": "Manuel Ugarte", "pos": "Milieu", "val": 30, "nat": ["Uruguay"]}, {"nom": "Djed Spence", "pos": "Défenseur", "val": 30, "nat": ["Angleterre", "Jamaïque"]}, {"nom": "Ian Maatsen", "pos": "Défenseur", "val": 30, "nat": ["Pays-Bas", "Suriname"]}, {"nom": "Senne Lammens", "pos": "Gardien", "val": 30, "nat": ["Belgique"]}, {"nom": "Georginio Rutter", "pos": "Attaquant", "val": 30, "nat": ["France", "Martinique"]}, {"nom": "Mikkel Damsgaard", "pos": "Milieu", "val": 30, "nat": ["Danemark"]}, {"nom": "Conor Bradley", "pos": "Défenseur", "val": 30, "nat": ["Northern Ireland"]}, {"nom": "Oscar Bobb", "pos": "Attaquant", "val": 30, "nat": ["Norvège", "Gambie"]}, {"nom": "Yasin Ayari", "pos": "Milieu", "val": 30, "nat": ["Suède", "Tunisie"]}, {"nom": "Yegor Yarmolyuk", "pos": "Milieu", "val": 30, "nat": ["Ukraine"]}, {"nom": "Noah Sadiki", "pos": "Milieu", "val": 30, "nat": ["RD Congo", "Belgique"]}, {"nom": "Kevin", "pos": "Attaquant", "val": 30, "nat": ["Brésil"]}, {"nom": "Thierno Barry", "pos": "Attaquant", "val": 30, "nat": ["France", "Guinée"]}, {"nom": "Amine Gouiri", "pos": "Attaquant", "val": 28, "nat": ["Algérie", "France"]}, {"nom": "Kang-in Lee", "pos": "Milieu", "val": 28, "nat": ["Corée du Sud"]}, {"nom": "Emmanuel Emegha", "pos": "Attaquant", "val": 28, "nat": ["Pays-Bas", "Nigeria"]}, {"nom": "Georges Mikautadze", "pos": "Attaquant", "val": 28, "nat": ["Géorgie", "France"]}, {"nom": "Marc Pubill", "pos": "Défenseur", "val": 28, "nat": ["Espagne"]}, {"nom": "Fábio Silva", "pos": "Attaquant", "val": 28, "nat": ["Portugal"]}, {"nom": "Brajan Gruda", "pos": "Milieu", "val": 28, "nat": ["Allemagne", "Albanie"]}, {"nom": "Assan Ouédraogo", "pos": "Milieu", "val": 28, "nat": ["Allemagne", "Burkina Faso"]}, {"nom": "Christopher Nkunku", "pos": "Attaquant", "val": 28, "nat": ["France", "RD Congo"]}, {"nom": "David Neres", "pos": "Attaquant", "val": 28, "nat": ["Brésil"]}, {"nom": "Dean Henderson", "pos": "Gardien", "val": 28, "nat": ["Angleterre"]}, {"nom": "Richarlison", "pos": "Attaquant", "val": 28, "nat": ["Brésil"]}, {"nom": "Calvin Bassey", "pos": "Défenseur", "val": 28, "nat": ["Nigeria", "Angleterre"]}, {"nom": "Wesley Fofana", "pos": "Défenseur", "val": 28, "nat": ["France", "Côte d'Ivoire"]}, {"nom": "Evann Guessand", "pos": "Attaquant", "val": 28, "nat": ["Côte d'Ivoire", "France"]}, {"nom": "Giorgi Mamardashvili", "pos": "Gardien", "val": 28, "nat": ["Géorgie"]}, {"nom": "Mohamed Amoura", "pos": "Attaquant", "val": 27, "nat": ["Algérie"]}, {"nom": "Bernardo Silva", "pos": "Milieu", "val": 27, "nat": ["Portugal"]}, {"nom": "Daniel Muñoz", "pos": "Défenseur", "val": 27, "nat": ["Colombie"]}, {"nom": "Carlos Augusto", "pos": "Défenseur", "val": 26, "nat": ["Brésil", "Italie"]}, {"nom": "Tylel Tati", "pos": "Défenseur", "val": 25, "nat": ["France", "Sénégal"]}, {"nom": "Denis Zakaria", "pos": "Milieu", "val": 25, "nat": ["Suisse", "RD Congo"]}, {"nom": "Quinten Timber", "pos": "Milieu", "val": 25, "nat": ["Pays-Bas", "Curaçao"]}, {"nom": "Charlie Cresswell", "pos": "Défenseur", "val": 25, "nat": ["Angleterre"]}, {"nom": "Tyler Morton", "pos": "Milieu", "val": 25, "nat": ["Angleterre"]}, {"nom": "Diego Moreira", "pos": "Milieu", "val": 25, "nat": ["Belgique", "Portugal"]}, {"nom": "Samson Baidoo", "pos": "Défenseur", "val": 25, "nat": ["Autriche"]}, {"nom": "Simon Adingra", "pos": "Attaquant", "val": 25, "nat": ["Côte d'Ivoire"]}, {"nom": "Robin Risser", "pos": "Gardien", "val": 25, "nat": ["France"]}, {"nom": "Unai Simón", "pos": "Gardien", "val": 25, "nat": ["Espagne"]}, {"nom": "Mikel Oyarzabal", "pos": "Attaquant", "val": 25, "nat": ["Espagne"]}, {"nom": "Robin Le Normand", "pos": "Défenseur", "val": 25, "nat": ["Espagne", "France"]}, {"nom": "Éder Militão", "pos": "Défenseur", "val": 25, "nat": ["Brésil", "Espagne"]}, {"nom": "Dani Vivian", "pos": "Défenseur", "val": 25, "nat": ["Espagne"]}, {"nom": "Gerard Martín", "pos": "Défenseur", "val": 25, "nat": ["Espagne"]}, {"nom": "Carlos Romero", "pos": "Défenseur", "val": 25, "nat": ["Espagne"]}, {"nom": "Jon Gorrotxategi", "pos": "Milieu", "val": 25, "nat": ["Espagne"]}, {"nom": "Natan", "pos": "Défenseur", "val": 25, "nat": ["Brésil"]}, {"nom": "Renato Veiga", "pos": "Défenseur", "val": 25, "nat": ["Portugal", "Cap-Vert"]}, {"nom": "Javi Guerra", "pos": "Milieu", "val": 25, "nat": ["Espagne"]}, {"nom": "Raúl Asencio", "pos": "Défenseur", "val": 25, "nat": ["Espagne"]}, {"nom": "Julian Ryerson", "pos": "Défenseur", "val": 25, "nat": ["Norvège", "États-Unis"]}, {"nom": "Min-jae Kim", "pos": "Défenseur", "val": 25, "nat": ["Corée du Sud"]}, {"nom": "Arnaud Kalimuendo", "pos": "Attaquant", "val": 25, "nat": ["France", "RD Congo"]}, {"nom": "Kaishu Sano", "pos": "Milieu", "val": 25, "nat": ["Japon"]}, {"nom": "Leon Avdullahu", "pos": "Milieu", "val": 25, "nat": ["Kosovo", "Suisse"]}, {"nom": "Konstantinos Koulierakis", "pos": "Défenseur", "val": 25, "nat": ["Grèce"]}, {"nom": "Ernest Poku", "pos": "Attaquant", "val": 25, "nat": ["Pays-Bas", "Ghana"]}, {"nom": "Loïc Badé", "pos": "Défenseur", "val": 25, "nat": ["France", "Côte d'Ivoire"]}, {"nom": "Jean-Mattéo Bahoya", "pos": "Attaquant", "val": 25, "nat": ["France", "Cameroun"]}, {"nom": "Honest Ahanor", "pos": "Défenseur", "val": 25, "nat": ["Italie", "Nigeria"]}, {"nom": "Mike Maignan", "pos": "Gardien", "val": 25, "nat": ["France", "Guyane"]}, {"nom": "Manuel Locatelli", "pos": "Milieu", "val": 25, "nat": ["Italie"]}, {"nom": "Gianluca Scamacca", "pos": "Attaquant", "val": 25, "nat": ["Italie"]}, {"nom": "Denzel Dumfries", "pos": "Défenseur", "val": 25, "nat": ["Pays-Bas", "Aruba"]}, {"nom": "Alexis Saelemaekers", "pos": "Milieu", "val": 25, "nat": ["Belgique"]}, {"nom": "Jhon Lucumí", "pos": "Défenseur", "val": 25, "nat": ["Colombie"]}, {"nom": "Sam Beukema", "pos": "Défenseur", "val": 25, "nat": ["Pays-Bas"]}, {"nom": "Nikola Krstović", "pos": "Attaquant", "val": 25, "nat": ["Monténégro", "Serbie"]}, {"nom": "Marco Carnesecchi", "pos": "Gardien", "val": 25, "nat": ["Italie"]}, {"nom": "Samuele Ricci", "pos": "Milieu", "val": 25, "nat": ["Italie"]}, {"nom": "Youssouf Fofana", "pos": "Milieu", "val": 25, "nat": ["France", "Mali"]}, {"nom": "Evan Ferguson", "pos": "Attaquant", "val": 25, "nat": ["Irlande", "Angleterre"]}, {"nom": "Jacobo Ramón", "pos": "Défenseur", "val": 25, "nat": ["Espagne"]}, {"nom": "Josh Acheampong", "pos": "Défenseur", "val": 25, "nat": ["Angleterre", "Ghana"]}, {"nom": "Charalampos Kostoulas", "pos": "Attaquant", "val": 25, "nat": ["Grèce"]}, {"nom": "Giovanni Leoni", "pos": "Défenseur", "val": 25, "nat": ["Italie"]}, {"nom": "Jack Grealish", "pos": "Attaquant", "val": 25, "nat": ["Angleterre", "Irlande"]}, {"nom": "Alex Iwobi", "pos": "Attaquant", "val": 25, "nat": ["Nigeria", "Angleterre"]}, {"nom": "Joachim Andersen", "pos": "Défenseur", "val": 25, "nat": ["Danemark"]}, {"nom": "Harry Wilson", "pos": "Attaquant", "val": 25, "nat": ["Pays de Galles", "Angleterre"]}, {"nom": "James Maddison", "pos": "Milieu", "val": 25, "nat": ["Angleterre", "Irlande"]}, {"nom": "Sander Berge", "pos": "Milieu", "val": 25, "nat": ["Norvège"]}, {"nom": "Caoimhín Kelleher", "pos": "Gardien", "val": 25, "nat": ["Irlande"]}, {"nom": "Anton Stach", "pos": "Milieu", "val": 25, "nat": ["Allemagne"]}, {"nom": "Antonee Robinson", "pos": "Défenseur", "val": 25, "nat": ["États-Unis", "Angleterre"]}, {"nom": "Ethan Ampadu", "pos": "Milieu", "val": 25, "nat": ["Pays de Galles", "Angleterre"]}, {"nom": "Vitaliy Mykolenko", "pos": "Défenseur", "val": 25, "nat": ["Ukraine"]}, {"nom": "Mats Wieffer", "pos": "Défenseur", "val": 25, "nat": ["Pays-Bas"]}, {"nom": "Brian Brobbey", "pos": "Attaquant", "val": 25, "nat": ["Pays-Bas", "Ghana"]}, {"nom": "Kaoru Mitoma", "pos": "Attaquant", "val": 25, "nat": ["Japon"]}, {"nom": "James Trafford", "pos": "Gardien", "val": 25, "nat": ["Angleterre"]}, {"nom": "Chris Richards", "pos": "Défenseur", "val": 25, "nat": ["États-Unis"]}, {"nom": "Roméo Lavia", "pos": "Milieu", "val": 25, "nat": ["Belgique", "Ghana"]}, {"nom": "Enzo Le Fée", "pos": "Milieu", "val": 25, "nat": ["France"]}, {"nom": "Keane Lewis-Potter", "pos": "Milieu", "val": 25, "nat": ["Angleterre"]}, {"nom": "Robin Roefs", "pos": "Gardien", "val": 25, "nat": ["Pays-Bas"]}, {"nom": "Lesley Ugochukwu", "pos": "Milieu", "val": 25, "nat": ["France", "Nigeria"]}, {"nom": "Tyrick Mitchell", "pos": "Défenseur", "val": 25, "nat": ["Angleterre", "Jamaïque"]}, {"nom": "Rodrigo Muniz", "pos": "Attaquant", "val": 25, "nat": ["Brésil"]}, {"nom": "Chemsdine Talbi", "pos": "Attaquant", "val": 25, "nat": ["Maroc", "Belgique"]}, {"nom": "André", "pos": "Milieu", "val": 25, "nat": ["Brésil"]}, {"nom": "Mathys Tel", "pos": "Attaquant", "val": 25, "nat": ["France", "Guadeloupe"]}, {"nom": "Maxime Estève", "pos": "Défenseur", "val": 25, "nat": ["France"]}, {"nom": "Mamadou Sarr", "pos": "Défenseur", "val": 25, "nat": ["Sénégal", "France"]}, {"nom": "Lewis Miley", "pos": "Milieu", "val": 25, "nat": ["Angleterre"]}, {"nom": "Chris Rigg", "pos": "Milieu", "val": 25, "nat": ["Angleterre"]}, {"nom": "Diego Gómez", "pos": "Milieu", "val": 25, "nat": ["Paraguay"]}, {"nom": "Nico González", "pos": "Attaquant", "val": 24, "nat": ["Argentine", "Italie"]}, {"nom": "Alejandro Grimaldo", "pos": "Défenseur", "val": 24, "nat": ["Espagne"]}, {"nom": "Martin Baturina", "pos": "Milieu", "val": 24, "nat": ["Croatie"]}, {"nom": "Koni De Winter", "pos": "Défenseur", "val": 23, "nat": ["Belgique", "RD Congo"]}, {"nom": "Nicolò Rovella", "pos": "Milieu", "val": 23, "nat": ["Italie"]}, {"nom": "Luis Henrique", "pos": "Milieu", "val": 23, "nat": ["Brésil"]}, {"nom": "Pietro Comuzzo", "pos": "Défenseur", "val": 23, "nat": ["Italie"]}, {"nom": "Davide Bartesaghi", "pos": "Défenseur", "val": 23, "nat": ["Italie"]}, {"nom": "Guglielmo Vicario", "pos": "Gardien", "val": 23, "nat": ["Italie"]}, {"nom": "Matvey Safonov", "pos": "Gardien", "val": 22, "nat": ["Russie"]}, {"nom": "Hákon Arnar Haraldsson", "pos": "Milieu", "val": 22, "nat": ["Islande"]}, {"nom": "Julio Enciso", "pos": "Milieu", "val": 22, "nat": ["Paraguay"]}, {"nom": "Mike Penders", "pos": "Gardien", "val": 22, "nat": ["Belgique"]}, {"nom": "Arthur Vermeeren", "pos": "Milieu", "val": 22, "nat": ["Belgique"]}, {"nom": "Marcos Llorente", "pos": "Défenseur", "val": 22, "nat": ["Espagne"]}, {"nom": "Johnny Cardoso", "pos": "Milieu", "val": 22, "nat": ["États-Unis", "Italie"]}, {"nom": "Karim Coulibaly", "pos": "Défenseur", "val": 22, "nat": ["Allemagne", "Côte d'Ivoire"]}, {"nom": "David Raum", "pos": "Défenseur", "val": 22, "nat": ["Allemagne"]}, {"nom": "Ermedin Demirovic", "pos": "Attaquant", "val": 22, "nat": ["Bosnie"]}, {"nom": "Deniz Undav", "pos": "Attaquant", "val": 22, "nat": ["Allemagne"]}, {"nom": "Nicolas Seiwald", "pos": "Milieu", "val": 22, "nat": ["Autriche"]}, {"nom": "Johan Bakayoko", "pos": "Attaquant", "val": 22, "nat": ["Belgique", "Côte d'Ivoire"]}, {"nom": "Chrislain Matsima", "pos": "Défenseur", "val": 22, "nat": ["France", "Congo"]}, {"nom": "Daniel Svensson", "pos": "Défenseur", "val": 22, "nat": ["Suède"]}, {"nom": "Equi Fernández", "pos": "Milieu", "val": 22, "nat": ["Argentine", "Paraguay"]}, {"nom": "Noahkai Banks", "pos": "Défenseur", "val": 22, "nat": ["États-Unis", "Allemagne"]}, {"nom": "Davide Frattesi", "pos": "Milieu", "val": 22, "nat": ["Italie"]}, {"nom": "Giacomo Raspadori", "pos": "Attaquant", "val": 22, "nat": ["Italie"]}, {"nom": "Isak Hien", "pos": "Défenseur", "val": 22, "nat": ["Suède", "Ghana"]}, {"nom": "Dominic Calvert-Lewin", "pos": "Attaquant", "val": 22, "nat": ["Angleterre"]}, {"nom": "Ladislav Krejčí", "pos": "Défenseur", "val": 22, "nat": ["Tchéquie"]}, {"nom": "Rodrigo Bentancur", "pos": "Milieu", "val": 22, "nat": ["Uruguay"]}, {"nom": "Emile Smith Rowe", "pos": "Milieu", "val": 22, "nat": ["Angleterre"]}, {"nom": "Pau Torres", "pos": "Défenseur", "val": 22, "nat": ["Espagne"]}, {"nom": "Robert Sánchez", "pos": "Gardien", "val": 22, "nat": ["Espagne", "Angleterre"]}, {"nom": "Pascal Struijk", "pos": "Défenseur", "val": 22, "nat": ["Pays-Bas", "Belgique"]}, {"nom": "Matty Cash", "pos": "Défenseur", "val": 22, "nat": ["Pologne", "Angleterre"]}, {"nom": "Maxim De Cuyper", "pos": "Défenseur", "val": 22, "nat": ["Belgique"]}, {"nom": "Joshua Zirkzee", "pos": "Attaquant", "val": 22, "nat": ["Pays-Bas", "Nigeria"]}, {"nom": "Randal Kolo Muani", "pos": "Attaquant", "val": 22, "nat": ["France", "RD Congo"]}, {"nom": "Trai Hume", "pos": "Défenseur", "val": 22, "nat": ["Northern Ireland"]}, {"nom": "Harvey Elliott", "pos": "Milieu", "val": 22, "nat": ["Angleterre"]}, {"nom": "Tolu Arokodare", "pos": "Attaquant", "val": 22, "nat": ["Nigeria"]}, {"nom": "Tyler Dibling", "pos": "Attaquant", "val": 22, "nat": ["Angleterre"]}, {"nom": "Jack Hinshelwood", "pos": "Milieu", "val": 22, "nat": ["Angleterre"]}, {"nom": "Tyrique George", "pos": "Attaquant", "val": 22, "nat": ["Angleterre", "Nigeria"]}, {"nom": "Lucas Hernández", "pos": "Défenseur", "val": 20, "nat": ["France", "Espagne"]}, {"nom": "Nayef Aguerd", "pos": "Défenseur", "val": 20, "nat": ["Maroc"]}, {"nom": "Timothy Weah", "pos": "Milieu", "val": 20, "nat": ["États-Unis", "France"]}, {"nom": "Estéban Lepaul", "pos": "Attaquant", "val": 20, "nat": ["France"]}, {"nom": "Pavel Sulc", "pos": "Milieu", "val": 20, "nat": ["Tchéquie"]}, {"nom": "Nathan Ngoy", "pos": "Défenseur", "val": 20, "nat": ["Belgique", "RD Congo"]}, {"nom": "Matthis Abline", "pos": "Attaquant", "val": 20, "nat": ["France"]}, {"nom": "Ismaël Doukouré", "pos": "Défenseur", "val": 20, "nat": ["France", "Côte d'Ivoire"]}, {"nom": "Vanderson", "pos": "Défenseur", "val": 20, "nat": ["Brésil"]}, {"nom": "Lucas Beraldo", "pos": "Défenseur", "val": 20, "nat": ["Brésil"]}, {"nom": "Jon Martín", "pos": "Défenseur", "val": 20, "nat": ["Espagne"]}, {"nom": "Thiago Pitarch", "pos": "Milieu", "val": 20, "nat": ["Espagne", "Maroc"]}, {"nom": "Alexander Sørloth", "pos": "Attaquant", "val": 20, "nat": ["Norvège"]}, {"nom": "Sergi Altimira", "pos": "Milieu", "val": 20, "nat": ["Espagne"]}, {"nom": "Ronald Araujo", "pos": "Défenseur", "val": 20, "nat": ["Uruguay", "Espagne"]}, {"nom": "Enzo Boyomo", "pos": "Défenseur", "val": 20, "nat": ["Cameroun", "France"]}, {"nom": "Thiago Almada", "pos": "Attaquant", "val": 20, "nat": ["Argentine", "Italie"]}, {"nom": "Matteo Ruggeri", "pos": "Défenseur", "val": 20, "nat": ["Italie"]}, {"nom": "Marc Casadó", "pos": "Milieu", "val": 20, "nat": ["Espagne"]}, {"nom": "Víctor Muñoz", "pos": "Attaquant", "val": 20, "nat": ["Espagne"]}, {"nom": "Rodrigo Mendoza", "pos": "Milieu", "val": 20, "nat": ["Espagne"]}, {"nom": "Serge Gnabry", "pos": "Attaquant", "val": 20, "nat": ["Allemagne", "Côte d'Ivoire"]}, {"nom": "Julian Brandt", "pos": "Milieu", "val": 20, "nat": ["Allemagne"]}, {"nom": "Patrik Schick", "pos": "Attaquant", "val": 20, "nat": ["Tchéquie"]}, {"nom": "Aleix García", "pos": "Milieu", "val": 20, "nat": ["Espagne"]}, {"nom": "Ritsu Doan", "pos": "Attaquant", "val": 20, "nat": ["Japon"]}, {"nom": "Arthur Theate", "pos": "Défenseur", "val": 20, "nat": ["Belgique"]}, {"nom": "Wouter Burger", "pos": "Milieu", "val": 20, "nat": ["Pays-Bas"]}, {"nom": "Ramon Hendriks", "pos": "Défenseur", "val": 20, "nat": ["Pays-Bas"]}, {"nom": "Rocco Reitz", "pos": "Milieu", "val": 20, "nat": ["Allemagne"]}, {"nom": "Noah Atubolu", "pos": "Gardien", "val": 20, "nat": ["Allemagne", "Nigeria"]}, {"nom": "Albian Hajdari", "pos": "Défenseur", "val": 20, "nat": ["Kosovo", "Suisse"]}, {"nom": "Yan Couto", "pos": "Milieu", "val": 20, "nat": ["Brésil", "Portugal"]}, {"nom": "Carney Chukwuemeka", "pos": "Milieu", "val": 20, "nat": ["Autriche", "Angleterre"]}, {"nom": "Nnamdi Collins", "pos": "Défenseur", "val": 20, "nat": ["Allemagne", "Nigeria"]}, {"nom": "Conrad Harder", "pos": "Attaquant", "val": 20, "nat": ["Danemark"]}, {"nom": "Eliesse Ben Seghir", "pos": "Attaquant", "val": 20, "nat": ["Maroc", "France"]}, {"nom": "Adrien Rabiot", "pos": "Milieu", "val": 20, "nat": ["France"]}, {"nom": "Vanja Milinković-Savić", "pos": "Gardien", "val": 20, "nat": ["Serbie", "Espagne"]}, {"nom": "Fikayo Tomori", "pos": "Défenseur", "val": 20, "nat": ["Angleterre", "Canada"]}, {"nom": "Matteo Gabbia", "pos": "Défenseur", "val": 20, "nat": ["Italie"]}, {"nom": "Frank Anguissa", "pos": "Milieu", "val": 20, "nat": ["Cameroun"]}, {"nom": "Teun Koopmeiners", "pos": "Milieu", "val": 20, "nat": ["Pays-Bas"]}, {"nom": "Billy Gilmour", "pos": "Milieu", "val": 20, "nat": ["Écosse"]}, {"nom": "Zion Suzuki", "pos": "Gardien", "val": 20, "nat": ["Japon", "États-Unis"]}, {"nom": "Oumar Solet", "pos": "Défenseur", "val": 20, "nat": ["France", "Côte d'Ivoire"]}, {"nom": "Kenneth Taylor", "pos": "Milieu", "val": 20, "nat": ["Pays-Bas"]}];
+
+const ROWS = ['attaquant','milieu','defenseur'];
+const COLS = ['champion_monde','vainqueur_c1','real_madrid'];
+
+const LABELS = {
+  attaquant:      {icon:'⚡', text:'Attaquant',       cls:'pos'},
+  milieu:         {icon:'🎯', text:'Milieu',           cls:'pos'},
+  defenseur:      {icon:'🛡️', text:'Défenseur',        cls:'pos'},
+  champion_monde: {icon:'🏆', text:'Champion du monde',cls:'cdm'},
+  vainqueur_c1:   {icon:'⭐', text:'Vainqueur C1',     cls:'c1'},
+  real_madrid:    {icon:'👑', text:'A joué au Real',   cls:'real'},
+};
+
+const HINTS = {
+  'attaquant-champion_monde':  'Attaquant 🏆 Champion du monde',
+  'attaquant-vainqueur_c1':    'Attaquant ⭐ Vainqueur de la Ligue des Champions',
+  'attaquant-real_madrid':     'Attaquant 👑 A joué au Real Madrid',
+  'milieu-champion_monde':     'Milieu 🏆 Champion du monde',
+  'milieu-vainqueur_c1':       'Milieu ⭐ Vainqueur de la Ligue des Champions',
+  'milieu-real_madrid':        'Milieu 👑 A joué au Real Madrid',
+  'defenseur-champion_monde':  'Défenseur 🏆 Champion du monde',
+  'defenseur-vainqueur_c1':    'Défenseur ⭐ Vainqueur de la Ligue des Champions',
+  'defenseur-real_madrid':     'Défenseur 👑 A joué au Real Madrid',
+};
+
+const MAX_ERR = 4;
+let state = {err:0, found:0, active:null, cells:{}, done:false};
+ROWS.forEach(r => COLS.forEach(c => state.cells[r+'-'+c] = {filled:false, nom:null, rarete:null}));
+
+function rareteBadge(r){
+  if(r>=80) return ['gold','RARE'];
+  if(r>=50) return ['silver','MOYEN'];
+  if(r>=20) return ['bronze','COMMUN'];
+  return ['common','ÉVIDENT'];
+}
+
+function buildGrid(){
+  const g = document.getElementById('grid');
+  g.innerHTML = '';
+  // Corner
+  g.insertAdjacentHTML('beforeend','<div></div>');
+  // Col headers
+  COLS.forEach(c => {
+    const l = LABELS[c];
+    g.insertAdjacentHTML('beforeend',
+      `<div class="col-hdr ${l.cls}"><div class="hdr-icon">${l.icon}</div><div class="hdr-text">${l.text}</div></div>`);
+  });
+  // Rows
+  ROWS.forEach(r => {
+    const l = LABELS[r];
+    g.insertAdjacentHTML('beforeend',
+      `<div class="row-hdr ${l.cls}"><div class="hdr-icon">${l.icon}</div><div class="hdr-text">${l.text}</div></div>`);
+    COLS.forEach(c => {
+      const key = r+'-'+c;
+      const cs = state.cells[key];
+      let html = '';
+      if(cs.filled){
+        const [bc,bl] = rareteBadge(cs.rarete);
+        const rarCls = cs.rarete>=50 ? 'rare' : 'commun';
+        html = `<div class="cell filled" data-key="${key}">
+          <div class="cell-content pop">
+            <div class="cell-nom">${cs.nom}</div>
+            <div class="cell-rarete ${rarCls}">${cs.rarete}% rareté</div>
+          </div>
+          <div class="rarete-badge ${bc}">${bl}</div>
+        </div>`;
+      } else if(state.done){
+        const s = (SOLUTIONS[key]||[])[0];
+        html = `<div class="cell locked" data-key="${key}">
+          <div class="cell-locked-ans">${s ? s.nom : '?'}<br><span style="font-size:9px;color:#444">${s ? s.rarete+'%' : ''}</span></div>
+        </div>`;
+      } else {
+        html = `<div class="cell" data-key="${key}" onclick="openCell('${key}','${r}','${c}')">
+          <div class="cell-plus">+</div>
+        </div>`;
+      }
+      g.insertAdjacentHTML('beforeend', html);
+    });
+  });
+}
+
+function updateScores(){
+  document.getElementById('sc-found').textContent = state.found+'/9';
+  document.getElementById('sc-err').textContent = state.err+'/'+MAX_ERR;
+  const filled = Object.values(state.cells).filter(c=>c.filled);
+  if(filled.length>0){
+    const avg = Math.round(filled.reduce((a,c)=>a+c.rarete,0)/filled.length);
+    document.getElementById('sc-rarete').textContent = avg+'%';
+  }
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('used',i<state.err));
+}
+
+function openCell(key,r,c){
+  if(state.done) return;
+  state.active={key,r,c};
+  document.getElementById('modal-hint').innerHTML = `<strong>${HINTS[key]}</strong>`;
+  document.getElementById('search-input').value='';
+  document.getElementById('suggestions').innerHTML='';
+  document.getElementById('modal-overlay').classList.add('open');
+  setTimeout(()=>document.getElementById('search-input').focus(),80);
+}
+
+function closeModal(){
+  document.getElementById('modal-overlay').classList.remove('open');
+  state.active=null;
+}
+function closeOut(e){ if(e.target===document.getElementById('modal-overlay')) closeModal(); }
+
+function onSearch(val){
+  const c = document.getElementById('suggestions');
+  if(val.length<2){c.innerHTML='';return;}
+  const q = val.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  const seen=new Set();
+  const matches = JOUEURS.filter(j=>{
+    if(seen.has(j.nom)) return false;
+    seen.add(j.nom);
+    return j.nom.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').includes(q);
+  }).slice(0,8);
+  if(!matches.length){c.innerHTML='<div class="no-res">Aucun joueur trouvé dans le top 500…</div>';return;}
+  c.innerHTML = matches.map(j=>`
+    <div class="sug-item" onclick="selectPlayer('${j.nom.replace(/'/g,"\\'")}')"">
+      <div class="sug-name">${j.nom}</div>
+      <div class="sug-meta">${j.pos}<br>${j.val}M€</div>
+    </div>`).join('');
+}
+
+function selectPlayer(nom){
+  const {key,r,c} = state.active;
+  closeModal();
+  const sols = SOLUTIONS[key]||[];
+  const found = sols.find(s=>s.nom===nom);
+  if(found){
+    state.cells[key]={filled:true,nom:nom,rarete:found.rarete};
+    state.found++;
+    const [bc,bl] = rareteBadge(found.rarete);
+    showToast(`✅ Correct · Rareté ${found.rarete}% · ${bl}`);
+    if(state.found===9){state.done=true;buildGrid();updateScores();setTimeout(()=>showEnd(true),500);return;}
+  } else {
+    state.err++;
+    showToast('❌ Joueur invalide pour cette case');
+    const el=document.querySelector(`[data-key="${key}"]`);
+    if(el){el.classList.add('wrong');setTimeout(()=>el.classList.remove('wrong'),400);}
+    if(state.err>=MAX_ERR){state.done=true;buildGrid();updateScores();setTimeout(()=>showEnd(false),600);return;}
+  }
+  buildGrid();updateScores();
+}
+
+function avgRarete(){
+  const filled=Object.values(state.cells).filter(c=>c.filled);
+  if(!filled.length) return 0;
+  return Math.round(filled.reduce((a,c)=>a+c.rarete,0)/filled.length);
+}
+
+function showEnd(win){
+  const el=document.getElementById('end');
+  el.classList.add('show');
+  el.scrollIntoView({behavior:'smooth'});
+  document.getElementById('end-title').textContent=win?'BRAVO !':'DOMMAGE';
+  document.getElementById('end-title').className='end-title '+(win?'win':'lose');
+  const avg=avgRarete();
+  const level = avg>=70?'🔥 Expert' : avg>=45?'💪 Bon niveau' : '👍 Correct';
+  document.getElementById('end-rarete').textContent=avg+'% de rareté moy.';
+  document.getElementById('end-sub').textContent=`${level} · ${state.found}/9 trouvés · ${state.err} erreur${state.err!==1?'s':''}`;
+  buildShare();
+}
+
+function buildShare(){
+  const date=new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'long'});
+  let grid='';
+  ROWS.forEach(r=>{COLS.forEach(c=>{grid+=state.cells[r+'-'+c].filled?'🟢':'⬛';});grid+='\n';});
+  const avg=avgRarete();
+  const t=`⚽ Foot Grid — ${date}\nMode : FACILE\n${grid}✅ ${state.found}/9 · Rareté: ${avg}% · ${state.err} erreur${state.err!==1?'s':''}\n\njoue sur footgrid.fr`;
+  document.getElementById('share-prev').textContent=t;
+  document.getElementById('share-prev').classList.add('show');
+  return t;
+}
+
+function shareResult(){
+  const t=buildShare();
+  window.open('https://wa.me/?text='+encodeURIComponent(t),'_blank');
+  if(navigator.clipboard) navigator.clipboard.writeText(t).then(()=>{
+    document.getElementById('copied').classList.add('show');
+  });
+}
+
+let toastT;
+function showToast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+buildGrid();
+</script>
+</body>
+</html>
